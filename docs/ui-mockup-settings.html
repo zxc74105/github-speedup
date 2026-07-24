@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Proxy Downloader - 设置</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { background: #e8ecf0; display: flex; justify-content: center; padding: 30px; }
+
+  .window {
+    width: 1000px; height: 780px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    background: #f5f6f8;
+    border-bottom: 1px solid #ddd;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .titlebar .left { display: flex; align-items: center; gap: 12px; }
+  .titlebar .app-name { font-weight: 700; font-size: 15px; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+  .titlebar .app-name .logo { width: 18px; height: 18px; background: linear-gradient(135deg,#155DFC,#764ba2); border-radius: 5px; }
+  .titlebar .app-name .ver { font-weight: 400; color: #999; font-size: 11px; }
+  .titlebar .window-ctrl { display: flex; gap: 8px; }
+  .titlebar .window-ctrl span { display: inline-block; width: 13px; height: 13px; border-radius: 50%; }
+  .titlebar .window-ctrl .close { background: #ff5f57; }
+  .titlebar .window-ctrl .min { background: #febc2e; }
+  .titlebar .window-ctrl .max { background: #28c840; }
+
+  .body { display: flex; flex: 1; overflow: hidden; }
+
+  .sidebar {
+    width: 180px;
+    background: #f5f6f8;
+    border-right: 1px solid #e0e0e0;
+    padding: 12px 0;
+    flex-shrink: 0;
+  }
+  .sidebar .cat {
+    padding: 9px 20px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 3px solid transparent;
+  }
+  .sidebar .cat:hover { background: #eef0f4; }
+  .sidebar .cat.active { background: #fff; color: #155DFC; font-weight: 600; border-left-color: #155DFC; }
+  .sidebar .cat .count { margin-left: auto; font-size: 11px; color: #999; }
+  .sidebar .divider { height: 1px; background: #e0e0e0; margin: 8px 16px; }
+  .sidebar .cat-label { padding: 6px 20px 2px; font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+  .page-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 24px 0;
+    font-size: 18px; font-weight: 700; color: #1a1a2e;
+    flex-shrink: 0;
+  }
+  .page-header .back { font-size: 13px; font-weight: 400; color: #155DFC; cursor: pointer; }
+  .page-header .back:hover { text-decoration: underline; }
+
+  .settings-body { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .section {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .section-title {
+    padding: 10px 16px;
+    font-size: 13px; font-weight: 600;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8e8e8;
+    color: #333;
+  }
+  .section-body { padding: 14px 16px; }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .setting-row:last-child { border-bottom: none; }
+
+  .setting-label {
+    width: 160px;
+    font-size: 13px;
+    color: #555;
+    flex-shrink: 0;
+  }
+  .setting-control { flex: 1; display: flex; align-items: center; gap: 10px; }
+
+  .btn {
+    padding: 6px 14px; border-radius: 5px; border: 1px solid #d0d0d0;
+    background: #fff; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 5px; color: #444;
+  }
+  .btn:hover { border-color: #155DFC; color: #155DFC; }
+  .btn-primary { background: #155DFC; color: #fff; border-color: #155DFC; }
+  .btn-primary:hover { background: #0d47d9; }
+  .btn-danger { color: #e53935; border-color: #e53935; }
+  .btn-danger:hover { background: #e53935; color: #fff; }
+
+  .input-text {
+    padding: 6px 12px;
+    border: 1.5px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    flex: 1;
+    max-width: 360px;
+  }
+  .input-text:focus { border-color: #155DFC; }
+
+  .select {
+    padding: 6px 10px;
+    border: 1.5px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 12px;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+    min-width: 120px;
+  }
+  .select:focus { border-color: #155DFC; }
+
+  .slider-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+  .slider-row input[type="range"] {
+    flex: 1; max-width: 240px;
+    -webkit-appearance: none; height: 4px; background: #ddd; border-radius: 2px; outline: none;
+  }
+  .slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: #155DFC; cursor: pointer;
+  }
+  .slider-row .slider-val { font-size: 13px; font-weight: 600; color: #155DFC; min-width: 70px; }
+
+  .toggle-group { display: flex; gap: 20px; }
+  .toggle-group label { font-size: 13px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .toggle-group input[type="radio"] { accent-color: #155DFC; }
+
+  .danger-zone { margin-top: 4px; }
+
+  .about-info { font-size: 13px; color: #555; line-height: 2; }
+  .about-info a { color: #155DFC; text-decoration: none; }
+  .about-info a:hover { text-decoration: underline; }
+
+  .footer-actions {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 16px 24px 20px;
+    border-top: 1px solid #e8e8e8;
+    background: #fafbfc;
+    flex-shrink: 0;
+  }
+
+  .hint { font-size: 11px; color: #aaa; margin-left: 4px; }
+
+  .status-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 8px;
+    font-size: 10px; font-weight: 500;
+    background: #e8f5e9; color: #2e7d32;
+  }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="left">
+      <div class="app-name">
+        <span class="logo"></span>
+        Multi-Proxy Downloader
+        <span class="ver">v1.2.0</span>
+      </div>
+    </div>
+    <div class="window-ctrl">
+      <span class="min"></span>
+      <span class="max"></span>
+      <span class="close"></span>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="sidebar">
+      <div class="cat" onclick="window.location.href='ui-mockup.html'">📥 全部 <span class="count">3</span></div>
+      <div class="cat">⬇️ 下载中 <span class="count">2</span></div>
+      <div class="cat">✅ 已完成 <span class="count">1</span></div>
+      <div class="cat">❌ 失败 <span class="count">0</span></div>
+      <div class="divider"></div>
+      <div class="cat-label">代理</div>
+      <div class="cat" onclick="window.location.href='ui-mockup-proxy.html'">🌐 代理列表</div>
+      <div class="cat"><span>🟢 在线 8/82</span></div>
+      <div class="divider"></div>
+      <div class="cat active">⚙️ 设置</div>
+    </div>
+
+    <div class="main">
+      <div class="page-header">
+        <span class="back" onclick="window.location.href='ui-mockup.html'">← 返回下载任务</span>
+      </div>
+
+      <div class="settings-body">
+        <!-- 下载设置 -->
+        <div class="section">
+          <div class="section-title">⬇️ 下载设置</div>
+          <div class="section-body">
+            <div class="setting-row">
+              <div class="setting-label">默认下载文件夹</div>
+              <div class="setting-control">
+                <input class="input-text" value="D:\Downloads" readonly>
+                <button class="btn" style="font-size:16px;padding:4px 12px;" title="选择文件夹">📂</button>
+                <span class="hint">选择保存下载文件的文件夹</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">默认并发数</div>
+              <div class="setting-control">
+                <div class="slider-row">
+                  <input type="range" min="1" max="50" value="20">
+                  <span class="slider-val">20 <span class="hint">Worker</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">分片大小</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option>5 MB</option>
+                  <option selected>10 MB</option>
+                  <option>20 MB</option>
+                  <option>50 MB</option>
+                </select>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">最大重试次数</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option>0 (不重试)</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option selected>3</option>
+                  <option>5</option>
+                  <option>10</option>
+                </select>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">请求超时</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option>10 秒</option>
+                  <option>20 秒</option>
+                  <option selected>30 秒</option>
+                  <option>60 秒</option>
+                  <option>120 秒</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 代理设置 -->
+        <div class="section">
+          <div class="section-title">🌐 代理设置</div>
+          <div class="section-body">
+            <div class="setting-row">
+              <div class="setting-label">启动时自动测速</div>
+              <div class="setting-control">
+                <div class="toggle-group">
+                  <label><input type="radio" name="autoTest" checked> 是</label>
+                  <label><input type="radio" name="autoTest"> 否</label>
+                </div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">静默速度阈值</div>
+              <div class="setting-control">
+                <div class="slider-row">
+                  <input type="range" min="0" max="50" value="2" step="0.5">
+                  <span class="slider-val">2.0 Mbps</span>
+                </div>
+                <span class="hint">低于此速度的代理自动静默</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">静默延迟阈值</div>
+              <div class="setting-control">
+                <div class="slider-row">
+                  <input type="range" min="100" max="2000" value="500" step="50">
+                  <span class="slider-val">500 ms</span>
+                </div>
+                <span class="hint">高于此延迟的代理自动静默</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">TCP 连接超时</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option>1 秒</option>
+                  <option>3 秒</option>
+                  <option selected>5 秒</option>
+                  <option>10 秒</option>
+                  <option>30 秒</option>
+                </select>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">测速测试文件</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option>512 KB</option>
+                  <option selected>1 MB</option>
+                  <option>5 MB</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 外观 -->
+        <div class="section">
+          <div class="section-title">🎨 外观</div>
+          <div class="section-body">
+            <div class="setting-row">
+              <div class="setting-label">主题</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option selected>🌞 浅色</option>
+                  <option>🌙 深色</option>
+                  <option>💻 跟随系统</option>
+                </select>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">语言</div>
+              <div class="setting-control">
+                <select class="select">
+                  <option selected>简体中文</option>
+                  <option>English</option>
+                </select>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">启动时检查更新</div>
+              <div class="setting-control">
+                <div class="toggle-group">
+                  <label><input type="radio" name="checkUpdate" checked> 是</label>
+                  <label><input type="radio" name="checkUpdate"> 否</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据管理 -->
+        <div class="section">
+          <div class="section-title">🗄️ 数据管理</div>
+          <div class="section-body">
+            <div class="setting-row">
+              <div class="setting-label">成功代理记录</div>
+              <div class="setting-control" style="color:#555;font-size:13px;">
+                <span>32 条记录 · 总下载 45.7 GB</span>
+                <span class="status-badge" style="margin-left:8px;">数据正常</span>
+              </div>
+            </div>
+            <div class="setting-row" style="border-bottom:none;padding-top:12px;">
+              <div class="setting-label"></div>
+              <div class="setting-control" style="gap:8px;">
+                <button class="btn">📤 导出记录</button>
+                <button class="btn btn-danger">🗑 清除所有记录</button>
+                <button class="btn btn-danger">⟲ 重置所有设置</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 关于 -->
+        <div class="section">
+          <div class="section-title">ℹ️ 关于</div>
+          <div class="section-body">
+            <div class="about-info">
+              <strong>Multi-Proxy Downloader</strong> v1.2.0<br>
+              使用 GitHub 代理节点加速文件下载，支持多代理并发、智能静默、成功记录排行。<br><br>
+              <button class="btn">🔄 检查更新</button>
+              <span style="margin-left:12px;">当前已是最新版本</span>
+              <span style="margin-left:20px;color:#bbb;">|</span>
+              <a href="#">GitHub 仓库 →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn">恢复默认</button>
+        <button class="btn btn-primary">💾 保存设置</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

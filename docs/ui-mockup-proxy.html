@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Proxy Downloader - 代理管理</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { background: #e8ecf0; display: flex; justify-content: center; padding: 30px; }
+
+  .window {
+    width: 1000px; height: 780px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    background: #f5f6f8;
+    border-bottom: 1px solid #ddd;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .titlebar .left { display: flex; align-items: center; gap: 12px; }
+  .titlebar .app-name { font-weight: 700; font-size: 15px; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+  .titlebar .app-name .logo { width: 18px; height: 18px; background: linear-gradient(135deg,#155DFC,#764ba2); border-radius: 5px; }
+  .titlebar .app-name .ver { font-weight: 400; color: #999; font-size: 11px; }
+  .titlebar .window-ctrl { display: flex; gap: 8px; }
+  .titlebar .window-ctrl span { display: inline-block; width: 13px; height: 13px; border-radius: 50%; }
+  .titlebar .window-ctrl .close { background: #ff5f57; }
+  .titlebar .window-ctrl .min { background: #febc2e; }
+  .titlebar .window-ctrl .max { background: #28c840; }
+
+  .body { display: flex; flex: 1; overflow: hidden; }
+
+  .sidebar {
+    width: 180px;
+    background: #f5f6f8;
+    border-right: 1px solid #e0e0e0;
+    padding: 12px 0;
+    flex-shrink: 0;
+  }
+  .sidebar .cat {
+    padding: 9px 20px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 3px solid transparent;
+  }
+  .sidebar .cat:hover { background: #eef0f4; }
+  .sidebar .cat.active { background: #fff; color: #155DFC; font-weight: 600; border-left-color: #155DFC; }
+  .sidebar .cat .count { margin-left: auto; font-size: 11px; color: #999; }
+  .sidebar .divider { height: 1px; background: #e0e0e0; margin: 8px 16px; }
+  .sidebar .cat-label { padding: 6px 20px 2px; font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+  .sidebar .online { display: flex; align-items: center; gap: 6px; }
+  .sidebar .online .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+  .main { flex: 1; display: flex; flex-direction: column; }
+
+  .toolbar {
+    display: flex; align-items: center;
+    padding: 10px 16px; gap: 8px;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8e8e8;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .toolbar .btn {
+    padding: 6px 14px; border-radius: 5px; border: 1px solid #d0d0d0;
+    background: #fff; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 5px; color: #444;
+  }
+  .toolbar .btn:hover { border-color: #155DFC; color: #155DFC; }
+  .toolbar .btn-primary { background: #155DFC; color: #fff; border-color: #155DFC; }
+  .toolbar .btn-primary:hover { background: #0d47d9; }
+  .toolbar .btn-danger { background: #fff; color: #e53935; border-color: #e53935; }
+  .toolbar .btn-danger:hover { background: #e53935; color: #fff; }
+  .toolbar .spacer { flex: 1; }
+  .toolbar .search-box {
+    padding: 6px 12px;
+    border: 1.5px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 12px;
+    outline: none;
+    width: 180px;
+  }
+  .toolbar .search-box:focus { border-color: #155DFC; }
+  .toolbar .filter-select {
+    padding: 6px 10px;
+    border: 1.5px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 12px;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .list-header {
+    display: flex;
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8e8e8;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .list-header .col-cb { width: 30px; }
+  .list-header .col-domain { flex: 1; cursor: pointer; }
+  .list-header .col-domain:hover { color: #155DFC; }
+  .list-header .col-task-status { width: 70px; text-align: center; }
+  .list-header .col-latency { width: 80px; text-align: right; cursor: pointer; }
+  .list-header .col-latency:hover { color: #155DFC; }
+  .list-header .col-speed { width: 120px; text-align: right; cursor: pointer; }
+  .list-header .col-speed:hover { color: #155DFC; }
+  .list-header .col-type { width: 90px; }
+  .list-header .col-action { width: 60px; text-align: center; }
+
+  .list-body { flex: 0 0 240px; overflow-y: auto; }
+  .proxy-row {
+    display: flex;
+    padding: 7px 16px;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: center;
+    font-size: 13px;
+  }
+  .proxy-row:hover { background: #f5f7ff; }
+  .proxy-row.silent { background: #fff8e1; }
+  .proxy-row.silent:hover { background: #fff3c4; }
+  .proxy-row .col-cb { width: 30px; }
+  .proxy-row .col-domain { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .proxy-row .col-domain .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .proxy-row .col-task-status { width: 70px; text-align: center; font-size: 11px; }
+  .proxy-row .col-latency { width: 80px; text-align: right; color: #555; }
+  .proxy-row .col-speed { width: 120px; text-align: right; }
+  .proxy-row .col-type { width: 90px; }
+  .proxy-row .col-action { width: 60px; text-align: center; }
+
+  .checkbox {
+    width: 15px; height: 15px;
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .checkbox.checked { background: #155DFC; border-color: #155DFC; position: relative; }
+  .checkbox.checked::after { content: "\2713"; color: #fff; font-size: 11px; position: absolute; top: -1px; left: 2px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .badge-contribute { background: #e3f2fd; color: #1565c0; }
+  .badge-search { background: #f3e5f5; color: #7b1fa2; }
+  .badge-user { background: #e8f5e9; color: #2e7d32; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .status-badge.active { background: #e8f5e9; color: #2e7d32; }
+  .status-badge.silent { background: #fff8e1; color: #f57f17; }
+  .status-badge.offline { background: #ffebee; color: #c62828; }
+
+  .speed-bar {
+    width: 65px; height: 4px;
+    background: #eee;
+    border-radius: 2px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+    overflow: hidden;
+  }
+  .speed-bar .fill { height: 100%; border-radius: 2px; }
+
+  .footer-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    background: #fafbfc;
+    font-size: 12px;
+    color: #888;
+    flex-shrink: 0;
+  }
+  .footer-bar .pagination { display: flex; gap: 4px; }
+  .footer-bar .pagination span {
+    padding: 3px 9px; border: 1px solid #e0e0e0; border-radius: 4px;
+    cursor: pointer; font-size: 11px; color: #555;
+  }
+  .footer-bar .pagination span.active { background: #155DFC; color: #fff; border-color: #155DFC; }
+  .footer-bar .pagination span:hover:not(.active) { border-color: #155DFC; color: #155DFC; }
+
+  .text-link { color: #155DFC; cursor: pointer; font-size: 12px; }
+  .text-link:hover { text-decoration: underline; }
+  .text-link.danger { color: #e53935; }
+  .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+
+  /* Success records section */
+  .records-section {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid #e8e8e8;
+  }
+  .records-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8e8e8;
+    flex-shrink: 0;
+  }
+  .records-header .title { font-size: 13px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 6px; }
+  .records-header .title .trophy { color: #f9a825; }
+  .records-header .spacer { flex: 1; }
+  .records-header .hint { font-size: 11px; color: #aaa; }
+
+  .records-list { flex: 1; overflow-y: auto; }
+  .record-row {
+    display: flex;
+    padding: 7px 16px;
+    border-bottom: 1px solid #f8f8f8;
+    align-items: center;
+    font-size: 13px;
+    cursor: default;
+  }
+  .record-row:hover { background: #f0f4ff; }
+  .record-row .rank {
+    width: 30px; font-weight: 700; font-size: 12px; color: #888;
+  }
+  .record-row .rank.gold { color: #f9a825; }
+  .record-row .rank.silver { color: #90a4ae; }
+  .record-row .rank.bronze { color: #a1887f; }
+  .record-row .rec-domain {
+    width: 160px; display: flex; align-items: center; gap: 8px; font-weight: 500;
+  }
+  .record-row .rec-count {
+    width: 180px;
+  }
+  .record-row .rec-count .bar-bg {
+    display: inline-block;
+    width: 100px; height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .record-row .rec-count .bar-bg .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #155DFC, #764ba2);
+  }
+  .record-row .rec-bytes { width: 100px; text-align: right; color: #555; }
+  .record-row .rec-last { flex: 1; text-align: right; color: #aaa; font-size: 12px; }
+  .record-row .rec-action { width: 50px; text-align: center; }
+
+  .no-record-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 12px;
+    flex: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="left">
+      <div class="app-name">
+        <span class="logo"></span>
+        Multi-Proxy Downloader
+        <span class="ver">v1.2.0</span>
+      </div>
+    </div>
+    <div class="window-ctrl">
+      <span class="min"></span>
+      <span class="max"></span>
+      <span class="close"></span>
+    </div>
+  </div>
+
+  <div class="body">
+    <!-- Left sidebar -->
+    <div class="sidebar">
+      <div class="cat" onclick="window.location.href='ui-mockup.html'">📥 全部 <span class="count">3</span></div>
+      <div class="cat">⬇️ 下载中 <span class="count">2</span></div>
+      <div class="cat">✅ 已完成 <span class="count">1</span></div>
+      <div class="cat">❌ 失败 <span class="count">0</span></div>
+      <div class="divider"></div>
+      <div class="cat-label">代理</div>
+      <div class="cat active">🌐 代理列表</div>
+      <div class="cat">
+        <span class="online"><span class="dot" style="background:#00c853;"></span> 在线 8 / 82</span>
+      </div>
+      <div class="divider"></div>
+      <div class="cat" onclick="window.location.href='ui-mockup-settings.html'">⚙️ 设置</div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main">
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button class="btn btn-primary">⏱ 全部测速</button>
+        <button class="btn">📥 导入</button>
+        <button class="btn">📤 导出</button>
+        <div class="spacer"></div>
+        <input class="search-box" placeholder="搜索域名..." value="">
+        <select class="filter-select">
+          <option>全部类型</option>
+          <option>contribute</option>
+          <option>search</option>
+          <option>user</option>
+        </select>
+      </div>
+
+      <!-- Proxy list header -->
+      <div class="list-header">
+        <span class="col-cb">☐</span>
+        <span class="col-domain">域名 ↑</span>
+        <span class="col-task-status">当前状态</span>
+        <span class="col-latency">延迟</span>
+        <span class="col-speed">速度</span>
+        <span class="col-type">类型</span>
+        <span class="col-action">操作</span>
+      </div>
+
+      <!-- Proxy list body -->
+      <div class="list-body">
+        <div class="proxy-row">
+          <div class="col-cb"><span class="checkbox checked"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#00c853;"></span>gh.dpik.top</div>
+          <div class="col-task-status"><span class="status-badge active">✅ 可用</span></div>
+          <div class="col-latency">45 ms</div>
+          <div class="col-speed"><span class="speed-bar"><div class="fill" style="width:95%;background:#00c853;"></div></span><span class="mono" style="color:#00c853;">45.2 Mbps</span></div>
+          <div class="col-type"><span class="badge badge-contribute">contribute</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+        <div class="proxy-row">
+          <div class="col-cb"><span class="checkbox checked"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#00c853;"></span>ghproxy.net</div>
+          <div class="col-task-status"><span class="status-badge active">✅ 可用</span></div>
+          <div class="col-latency">80 ms</div>
+          <div class="col-speed"><span class="speed-bar"><div class="fill" style="width:60%;background:#00c853;"></div></span><span class="mono" style="color:#00c853;">12.8 Mbps</span></div>
+          <div class="col-type"><span class="badge badge-contribute">contribute</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+        <div class="proxy-row silent">
+          <div class="col-cb"><span class="checkbox checked"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#ffb300;"></span>gh-proxy.com</div>
+          <div class="col-task-status"><span class="status-badge silent">⏸ 静默</span></div>
+          <div class="col-latency">120 ms</div>
+          <div class="col-speed"><span class="speed-bar"><div class="fill" style="width:20%;background:#ffb300;"></div></span><span class="mono" style="color:#ffb300;">3.1 Mbps</span></div>
+          <div class="col-type"><span class="badge badge-search">search</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+        <div class="proxy-row silent">
+          <div class="col-cb"><span class="checkbox"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#ff1744;"></span>down.mxw.xx.kg</div>
+          <div class="col-task-status"><span class="status-badge offline">❌ 离线</span></div>
+          <div class="col-latency" style="color:#999;">N/A</div>
+          <div class="col-speed" style="color:#999;">N/A</div>
+          <div class="col-type"><span class="badge badge-contribute">contribute</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+        <div class="proxy-row">
+          <div class="col-cb"><span class="checkbox checked"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#90caf9;"></span>slink.ltd</div>
+          <div class="col-task-status"><span class="status-badge active" style="background:#e8eaf6;color:#3949ab;">⏳ 检测中</span></div>
+          <div class="col-latency" style="color:#999;">测速中...</div>
+          <div class="col-speed" style="color:#999;">测速中...</div>
+          <div class="col-type"><span class="badge badge-search">search</span></div>
+          <div class="col-action" style="color:#999;">测速中</div>
+        </div>
+        <div class="proxy-row" style="opacity:0.6;">
+          <div class="col-cb"><span class="checkbox"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#ccc;"></span>777.z321.cc.cd</div>
+          <div class="col-task-status"><span class="status-badge" style="background:#eee;color:#999;">⏸ 已跳过</span></div>
+          <div class="col-latency" style="color:#999;">已跳过</div>
+          <div class="col-speed" style="color:#999;">已跳过</div>
+          <div class="col-type"><span class="badge badge-contribute">contribute</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+        <div class="proxy-row">
+          <div class="col-cb"><span class="checkbox checked"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#00c853;"></span>gh-proxy.net</div>
+          <div class="col-task-status"><span class="status-badge active">✅ 可用</span></div>
+          <div class="col-latency">95 ms</div>
+          <div class="col-speed"><span class="speed-bar"><div class="fill" style="width:45%;background:#00c853;"></div></span><span class="mono" style="color:#00c853;">9.5 Mbps</span></div>
+          <div class="col-type"><span class="badge badge-contribute">contribute</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+        <div class="proxy-row">
+          <div class="col-cb"><span class="checkbox checked"></span></div>
+          <div class="col-domain"><span class="status-dot" style="background:#00c853;"></span>fastgit.cc</div>
+          <div class="col-task-status"><span class="status-badge active">✅ 可用</span></div>
+          <div class="col-latency">60 ms</div>
+          <div class="col-speed"><span class="speed-bar"><div class="fill" style="width:80%;background:#00c853;"></div></span><span class="mono" style="color:#00c853;">22.1 Mbps</span></div>
+          <div class="col-type"><span class="badge badge-search">search</span></div>
+          <div class="col-action"><span class="text-link">测速</span></div>
+        </div>
+      </div>
+
+      <!-- Footer bar -->
+      <div class="footer-bar">
+        <span>已启用 45 / 82 · <strong style="color:#e53935;">此任务静默: 12</strong> · 可用 8 · 排序: 延迟 ↑</span>
+        <div class="pagination">
+          <span>‹</span>
+          <span class="active">1</span>
+          <span>2</span>
+          <span>3</span>
+          <span>…</span>
+          <span>11</span>
+          <span>›</span>
+        </div>
+      </div>
+
+      <!-- Success Records Section -->
+      <div class="records-section">
+        <div class="records-header">
+          <div class="title"><span class="trophy">🏆</span> 成功代理记录</div>
+          <div class="hint">按成功下载次数排序，使用越多越靠前</div>
+          <div class="spacer"></div>
+          <button class="btn" style="margin-right:6px;">🔍 选择无记录代理</button>
+          <button class="btn btn-danger">🗑 删除选中</button>
+        </div>
+
+        <div class="records-list">
+          <div class="record-row">
+            <div class="rank gold">#1</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#00c853;"></span>gh.dpik.top</div>
+            <div class="rec-count">
+              <span class="bar-bg"><div class="bar-fill" style="width:100%;"></div></span>
+              <span class="mono">32 次</span>
+            </div>
+            <div class="rec-bytes">16.2 GB</div>
+            <div class="rec-last">2024-01-15</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <div class="record-row">
+            <div class="rank silver">#2</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#00c853;"></span>fastgit.cc</div>
+            <div class="rec-count">
+              <span class="bar-bg"><div class="bar-fill" style="width:88%;"></div></span>
+              <span class="mono">28 次</span>
+            </div>
+            <div class="rec-bytes">12.8 GB</div>
+            <div class="rec-last">2024-01-14</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <div class="record-row">
+            <div class="rank bronze">#3</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#00c853;"></span>ghproxy.net</div>
+            <div class="rec-count">
+              <span class="bar-bg"><div class="bar-fill" style="width:66%;"></div></span>
+              <span class="mono">21 次</span>
+            </div>
+            <div class="rec-bytes">9.5 GB</div>
+            <div class="rec-last">2024-01-13</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <div class="record-row">
+            <div class="rank" style="color:#888;">#4</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#ffb300;"></span>gh-proxy.com</div>
+            <div class="rec-count">
+              <span class="bar-bg"><div class="bar-fill" style="width:38%;"></div></span>
+              <span class="mono">12 次</span>
+            </div>
+            <div class="rec-bytes">4.2 GB</div>
+            <div class="rec-last">2024-01-10</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <div class="record-row">
+            <div class="rank" style="color:#888;">#5</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#90caf9;"></span>slink.ltd</div>
+            <div class="rec-count">
+              <span class="bar-bg"><div class="bar-fill" style="width:16%;"></div></span>
+              <span class="mono">5 次</span>
+            </div>
+            <div class="rec-bytes">1.8 GB</div>
+            <div class="rec-last">2024-01-08</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <div class="record-row" style="opacity:0.5;">
+            <div class="rank" style="color:#ccc;">#6</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#ccc;"></span>gh-proxy.yoooo.pw</div>
+            <div class="rec-count">
+              <span class="bar-bg"><div class="bar-fill" style="width:3%;"></div></span>
+              <span class="mono">1 次</span>
+            </div>
+            <div class="rec-bytes">23 MB</div>
+            <div class="rec-last">2024-01-02</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <!-- No-record proxies -->
+          <div class="record-row" style="color:#999;">
+            <div class="rank" style="color:#ddd;">#7</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#eee;border:1px dashed #ccc;"></span>down.mxw.xx.kg</div>
+            <div class="rec-count" style="color:#bbb;">— 无记录 —</div>
+            <div class="rec-bytes" style="color:#bbb;">—</div>
+            <div class="rec-last" style="color:#bbb;">从未使用</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+          <div class="record-row" style="color:#999;">
+            <div class="rank" style="color:#ddd;">#8</div>
+            <div class="rec-domain"><span class="status-dot" style="background:#eee;border:1px dashed #ccc;"></span>777.z321.cc.cd</div>
+            <div class="rec-count" style="color:#bbb;">— 无记录 —</div>
+            <div class="rec-bytes" style="color:#bbb;">—</div>
+            <div class="rec-last" style="color:#bbb;">从未使用</div>
+            <div class="rec-action"><span class="text-link danger">删除</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

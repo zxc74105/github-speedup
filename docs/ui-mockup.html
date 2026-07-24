@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Proxy Downloader - UI 概览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { background: #e8ecf0; display: flex; justify-content: center; padding: 30px; }
+
+  .window {
+    width: 1100px; height: 760px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── 标题栏 ── */
+  .titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    background: #f5f6f8;
+    border-bottom: 1px solid #ddd;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .titlebar .left { display: flex; align-items: center; gap: 12px; }
+  .titlebar .app-name { font-weight: 700; font-size: 15px; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+  .titlebar .app-name .logo { width: 18px; height: 18px; background: linear-gradient(135deg,#155DFC,#764ba2); border-radius: 5px; }
+  .titlebar .app-name .ver { font-weight: 400; color: #999; font-size: 11px; }
+
+  .titlebar .new-task-btn {
+    padding: 6px 16px; border-radius: 6px; border: none;
+    background: #155DFC; color: #fff; font-size: 13px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+  }
+  .titlebar .new-task-btn:hover { background: #0d47d9; }
+
+  .titlebar .window-ctrl { display: flex; gap: 8px; }
+  .titlebar .window-ctrl span { display: inline-block; width: 13px; height: 13px; border-radius: 50%; }
+  .titlebar .window-ctrl .close { background: #ff5f57; }
+  .titlebar .window-ctrl .min { background: #febc2e; }
+  .titlebar .window-ctrl .max { background: #28c840; }
+
+  /* ── 工具栏 ── */
+  .toolbar {
+    display: flex; align-items: center;
+    padding: 8px 20px; gap: 6px;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8e8e8;
+    flex-shrink: 0;
+  }
+  .toolbar .btn {
+    padding: 5px 12px; border-radius: 5px; border: 1px solid #d0d0d0;
+    background: #fff; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 5px; color: #444;
+    transition: all 0.15s;
+  }
+  .toolbar .btn:hover { border-color: #155DFC; color: #155DFC; }
+  .toolbar .btn-icon { padding: 5px 8px; }
+  .toolbar .spacer { flex: 1; }
+
+  /* ── 主体：左栏 + 右栏 ── */
+  .body { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── 左栏：分类 ── */
+  .sidebar {
+    width: 180px;
+    background: #f5f6f8;
+    border-right: 1px solid #e0e0e0;
+    padding: 12px 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar .cat {
+    padding: 9px 20px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .sidebar .cat:hover { background: #eef0f4; color: #1a1a2e; }
+  .sidebar .cat.active {
+    background: #fff;
+    color: #155DFC;
+    font-weight: 600;
+    border-left-color: #155DFC;
+  }
+  .sidebar .cat .count {
+    margin-left: auto;
+    font-size: 11px;
+    color: #999;
+    font-weight: 400;
+  }
+  .sidebar .divider {
+    height: 1px; background: #e0e0e0; margin: 8px 16px;
+  }
+  .sidebar .cat-label {
+    padding: 6px 20px 2px;
+    font-size: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── 右栏 ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── 下载列表表头 ── */
+  .list-header {
+    display: flex;
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8e8e8;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .list-header .col-name { flex: 2.5; }
+  .list-header .col-size { width: 90px; text-align: right; }
+  .list-header .col-progress { width: 140px; }
+  .list-header .col-speed { width: 100px; text-align: right; }
+  .list-header .col-eta { width: 80px; text-align: right; }
+  .list-header .col-status { width: 100px; }
+
+  /* ── 下载列表 ── */
+  .list-body { flex: 1; overflow-y: auto; }
+  .task-row {
+    display: flex;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.1s;
+    align-items: center;
+  }
+  .task-row:hover { background: #f5f7ff; }
+  .task-row.selected { background: #eef1ff; border-left: 3px solid #155DFC; }
+  .task-row .col-name { flex: 2.5; overflow: hidden; }
+  .task-row .col-name .filename { font-size: 13px; font-weight: 500; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-row .col-name .sub { font-size: 11px; color: #999; margin-top: 2px; display: flex; gap: 12px; }
+  .task-row .col-name .sub .proxy-count { display: flex; align-items: center; gap: 3px; }
+
+  .task-row .col-size { width: 90px; text-align: right; font-size: 12px; color: #555; }
+  .task-row .col-progress { width: 140px; }
+  .task-row .col-progress .pbar {
+    width: 100%; height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden; margin-bottom: 3px;
+  }
+  .task-row .col-progress .pbar .fill {
+    height: 100%; border-radius: 3px; transition: width 0.3s;
+  }
+  .task-row .col-progress .pct { font-size: 11px; color: #888; }
+  .task-row .col-speed { width: 100px; text-align: right; font-size: 12px; font-family: 'SF Mono', 'Fira Code', monospace; color: #155DFC; }
+  .task-row .col-eta { width: 80px; text-align: right; font-size: 12px; color: #888; }
+  .task-row .col-status { width: 100px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+  .task-row .col-status .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+
+  /* ── 底部详情面板 ── */
+  .detail-panel {
+    height: 190px;
+    border-top: 1px solid #e0e0e0;
+    background: #fafbfc;
+    flex-shrink: 0;
+    display: flex;
+  }
+  .detail-panel .tabs {
+    width: 140px;
+    border-right: 1px solid #e0e0e0;
+    padding: 8px 0;
+    flex-shrink: 0;
+  }
+  .detail-panel .tabs .dt {
+    padding: 7px 16px;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+  .detail-panel .tabs .dt.active { background: #fff; color: #155DFC; font-weight: 500; border-left-color: #155DFC; }
+  .detail-panel .detail-content {
+    flex: 1;
+    padding: 14px 20px;
+    overflow-y: auto;
+  }
+  .detail-panel .detail-content .info-row {
+    display: flex; font-size: 12px; margin-bottom: 6px; color: #555;
+  }
+  .detail-panel .detail-content .info-row .label { width: 80px; color: #999; flex-shrink: 0; }
+  .detail-panel .detail-content .info-row .value { color: #333; word-break: break-all; }
+
+  .detail-panel .detail-content .worker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .detail-panel .detail-content .worker-item {
+    padding: 6px 10px;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .detail-panel .detail-content .worker-item .wspeed { font-family: 'SF Mono', monospace; color: #155DFC; }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <!-- 标题栏 -->
+  <div class="titlebar">
+    <div class="left">
+      <div class="app-name">
+        <span class="logo"></span>
+        Multi-Proxy Downloader
+        <span class="ver">v1.2.0</span>
+      </div>
+    </div>
+    <button class="new-task-btn">＋ 新建任务</button>
+    <div class="window-ctrl">
+      <span class="min"></span>
+      <span class="max"></span>
+      <span class="close"></span>
+    </div>
+  </div>
+
+  <!-- 工具栏 -->
+  <div class="toolbar">
+    <button class="btn btn-icon">▶</button>
+    <button class="btn btn-icon">⏸</button>
+    <button class="btn btn-icon">✕</button>
+    <span style="width:1px;height:20px;background:#e0e0e0;margin:0 4px;"></span>
+    <button class="btn">🌐 代理管理</button>
+    <div class="spacer"></div>
+    <button class="btn">⏱ 全部测速</button>
+  </div>
+
+  <!-- 主体 -->
+  <div class="body">
+    <!-- 左栏：分类 -->
+    <div class="sidebar">
+      <div class="cat active">📥 全部 <span class="count">3</span></div>
+      <div class="cat">⬇️ 下载中 <span class="count">2</span></div>
+      <div class="cat">✅ 已完成 <span class="count">1</span></div>
+      <div class="cat">❌ 失败 <span class="count">0</span></div>
+      <div class="divider"></div>
+      <div class="cat-label">代理</div>
+      <div class="cat" onclick="window.location.href='ui-mockup-proxy.html'">🌐 代理列表</div>
+      <div class="cat" style="display:flex;align-items:center;gap:6px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#00c853;display:inline-block;"></span>
+        在线 8 / 82
+      </div>
+      <div class="divider"></div>
+      <div class="cat" onclick="window.location.href='ui-mockup-settings.html'">⚙️ 设置</div>
+    </div>
+
+    <!-- 右栏 -->
+    <div class="main">
+      <!-- 列表表头 -->
+      <div class="list-header">
+        <span class="col-name">文件名</span>
+        <span class="col-size">大小</span>
+        <span class="col-progress">进度</span>
+        <span class="col-speed">速度</span>
+        <span class="col-eta">剩余</span>
+        <span class="col-status">状态</span>
+      </div>
+
+      <!-- 列表 -->
+      <div class="list-body">
+        <!-- 任务1: 下载中 -->
+        <div class="task-row selected">
+          <div class="col-name">
+            <div class="filename">file.zip</div>
+            <div class="sub">
+              <span>📁 D:\Downloads</span>
+              <span class="proxy-count">🌐 4 Worker</span>
+            </div>
+          </div>
+          <div class="col-size">521 MB</div>
+          <div class="col-progress">
+            <div class="pbar"><div class="fill" style="width:62%;background:linear-gradient(90deg,#155DFC,#764ba2);"></div></div>
+            <span class="pct">324.5 MB (62.3%)</span>
+          </div>
+          <div class="col-speed">45.2 Mbps</div>
+          <div class="col-eta">~35s</div>
+          <div class="col-status"><span class="dot" style="background:#155DFC;"></span> 下载中</div>
+        </div>
+
+        <!-- 任务2: 下载中 -->
+        <div class="task-row">
+          <div class="col-name">
+            <div class="filename">ubuntu-24.04-desktop-amd64.iso</div>
+            <div class="sub">
+              <span>📁 D:\Downloads\ubuntu</span>
+              <span class="proxy-count">🌐 6 Worker</span>
+            </div>
+          </div>
+          <div class="col-size">5.7 GB</div>
+          <div class="col-progress">
+            <div class="pbar"><div class="fill" style="width:23%;background:linear-gradient(90deg,#155DFC,#764ba2);"></div></div>
+            <span class="pct">1.3 GB (23.1%)</span>
+          </div>
+          <div class="col-speed">28.7 Mbps</div>
+          <div class="col-eta">~12m</div>
+          <div class="col-status"><span class="dot" style="background:#155DFC;"></span> 下载中</div>
+        </div>
+
+        <!-- 任务3: 已完成 -->
+        <div class="task-row" style="opacity:0.7;">
+          <div class="col-name">
+            <div class="filename">node-v22.0.0-x64.msi</div>
+            <div class="sub">
+              <span>📁 D:\Downloads\installer</span>
+              <span class="proxy-count">✅ 完成</span>
+            </div>
+          </div>
+          <div class="col-size">42 MB</div>
+          <div class="col-progress">
+            <div class="pbar"><div class="fill" style="width:100%;background:#00c853;"></div></div>
+            <span class="pct">42 MB (100%)</span>
+          </div>
+          <div class="col-speed" style="color:#888;">—</div>
+          <div class="col-eta">完成</div>
+          <div class="col-status" style="color:#00c853;"><span class="dot" style="background:#00c853;"></span> 已完成</div>
+        </div>
+      </div>
+
+      <!-- 底部详情面板 -->
+      <div class="detail-panel">
+        <div class="tabs">
+          <div class="dt active">📋 详情</div>
+          <div class="dt">⚡ Worker</div>
+          <div class="dt">📊 速度</div>
+          <div class="dt">📜 日志</div>
+        </div>
+        <div class="detail-content">
+          <!-- 详情 Tab 内容 -->
+          <div class="info-row"><span class="label">文件名</span><span class="value">file.zip</span></div>
+          <div class="info-row"><span class="label">URL</span><span class="value">https://github.com/user/repo/releases/download/v1.0/file.zip</span></div>
+          <div class="info-row"><span class="label">保存文件夹</span><span class="value">📁 D:\Downloads <span style="color:#155DFC;cursor:pointer;margin-left:8px;font-size:11px;">[打开]</span></span></div>
+          <div class="info-row"><span class="label">文件大小</span><span class="value">521.0 MB</span></div>
+          <div class="info-row"><span class="label">分片数</span><span class="value">30 (每片 10 MB)</span></div>
+          <div class="info-row"><span class="label">已下载</span><span class="value">324.5 MB (62.3%)</span></div>
+          <div class="info-row"><span class="label">总速度</span><span class="value" style="color:#155DFC;font-weight:600;">45.2 Mbps</span></div>
+          <div class="info-row"><span class="label">代理切换</span><span class="value">3 次</span></div>
+
+          <!-- Worker 网格 -->
+          <div style="border-top:1px solid #e8e8e8;margin:10px 0;padding-top:10px;">
+            <div style="font-size:11px;color:#999;margin-bottom:6px;">Worker 实时状态</div>
+            <div class="worker-grid">
+              <div class="worker-item"><span>#1 gh.dpik.top</span><span class="wspeed">12.3 Mbps</span></div>
+              <div class="worker-item"><span>#2 ghproxy.net</span><span class="wspeed">8.1 Mbps</span></div>
+              <div class="worker-item"><span>#3 fastgit.cc</span><span class="wspeed">15.7 Mbps</span></div>
+              <div class="worker-item"><span>#4 gh-proxy.com</span><span class="wspeed" style="color:#ffb300;">3.2 Mbps</span></div>
+              <div class="worker-item"><span style="color:#999;">#5 等待中</span><span class="wspeed" style="color:#999;">—</span></div>
+              <div class="worker-item"><span style="color:#999;">#6 等待中</span><span class="wspeed" style="color:#999;">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
