@@ -5,6 +5,7 @@ import { useStore, Settings } from '../store/useStore'
 export default function SettingsPage() {
   const settings = useStore((s) => s.settings)
   const setSettings = useStore((s) => s.setSettings)
+  const setRecords = useStore((s) => s.setRecords)
   const [form] = Form.useForm()
   const [serverRunning, setServerRunning] = useState(false)
   const [serverAddr, setServerAddr] = useState('')
@@ -81,8 +82,9 @@ export default function SettingsPage() {
       okText: '确认清除',
       okType: 'danger',
       onOk: async () => {
-        const api = (window as any).go.bindings.DownloadAPI
-        await api.DeleteProxies([])
+        const api = (window as any).go.bindings.ConfigAPI
+        await api.ClearRecords()
+        setRecords([])
         message.success('已清除记录')
       },
     })

@@ -1,11 +1,13 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -136,26 +138,43 @@ func StartBackgroundDownload(task *DownloadTask, recordSuccess func(string, int6
 	}
 
 	// Load proxies
-	proxies, _ := ReadLines("proxies.txt")
-	pool := NewProxyPool(proxies)
+	proxiesPath := FindProxiesFile()
+	rawProxies, _ := ReadLines(proxiesPath)
+	var validProxies []string
+	for _, p := range rawProxies {
+		p = strings.TrimSpace(p)
+		if IsValidProxyDomain(p) {
+			validProxies = append(validProxies, EnsureScheme(p))
+		}
+	}
+	pool := NewProxyPool(validProxies)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	for i := 0; i < task.MaxConcurrent; i++ {
 		go func(workerID int) {
 			defer wg.Done()
 			for {
+				if ctx.Err() != nil {
+					return
+				}
+
 				taskMu.Lock()
 				if task.Status == "paused" || task.Status == "completed" || task.Status == "failed" {
 					taskMu.Unlock()
+					cancel()
 					return
 				}
 				taskMu.Unlock()
 
-				// Find next undownloaded part
+				// Atomically claim next undownloaded part
 				mu.Lock()
 				partIdx := -1
 				for idx, p := range task.Parts {
 					if !p.Downloaded {
 						partIdx = idx
+						task.Parts[idx].Downloaded = true
 						break
 					}
 				}
@@ -175,9 +194,10 @@ func StartBackgroundDownload(task *DownloadTask, recordSuccess func(string, int6
 					mu.Lock()
 					task.Parts[partIdx].Downloaded = true
 					totalDownloaded += partSize
+					downloaded := totalDownloaded
 					mu.Unlock()
 					if onProgress != nil {
-						onProgress(ProgressData{TaskID: taskID, Downloaded: totalDownloaded, TotalBytes: task.TotalBytes, PartDone: true})
+						onProgress(ProgressData{TaskID: taskID, Downloaded: downloaded, TotalBytes: task.TotalBytes, PartDone: true})
 					}
 					continue
 				}
@@ -190,24 +210,33 @@ func StartBackgroundDownload(task *DownloadTask, recordSuccess func(string, int6
 				var localDownloaded int64
 				retries := 0
 				for retries <= task.MaxRetry {
-					_, err := DownloadPartialFile(task.URL, proxyURL, partPath, part.Start, part.End, time.Duration(task.Timeout)*time.Second, func(n int64) {
+					if ctx.Err() != nil {
+						return
+					}
+					_, err := DownloadPartialFile(ctx, task.URL, proxyURL, partPath, part.Start, part.End, time.Duration(task.Timeout)*time.Second, func(n int64) {
 						mu.Lock()
 						totalDownloaded += n
 						localDownloaded += n
-						spd := calculateSpeed()
 						task.Downloaded = totalDownloaded
-						task.Speed = spd
-						if spd > 0 {
-							eta := float64(task.TotalBytes-totalDownloaded) / spd
-							task.ETA = fmt.Sprintf("%.0fs", eta)
-						}
+						downloaded := totalDownloaded
+						total := task.TotalBytes
 						mu.Unlock()
+
+						spd := calculateSpeed()
+
+						if spd > 0 {
+							eta := float64(total-downloaded) / spd
+							taskMu.Lock()
+							task.Speed = spd
+							task.ETA = fmt.Sprintf("%.0fs", eta)
+							taskMu.Unlock()
+						}
 
 						if onProgress != nil {
 							onProgress(ProgressData{
 								TaskID:      taskID,
-								Downloaded:  totalDownloaded,
-								TotalBytes:  task.TotalBytes,
+								Downloaded:  downloaded,
+								TotalBytes:  total,
 								Speed:       spd,
 								WorkerID:    workerID,
 								WorkerProxy: proxyURL,
@@ -218,10 +247,15 @@ func StartBackgroundDownload(task *DownloadTask, recordSuccess func(string, int6
 						os.Remove(partPath)
 						mu.Lock()
 						totalDownloaded -= localDownloaded
+						task.Parts[partIdx].Downloaded = false
 						localDownloaded = 0
 						mu.Unlock()
 						if recordFailure != nil {
-							recordFailure(proxyURL)
+							failDomain := proxyURL
+							if u, e := url.Parse(proxyURL); e == nil {
+								failDomain = u.Host
+							}
+							recordFailure(failDomain)
 						}
 						proxyURL, _ = pool.Fail(strconv.Itoa(workerID))
 						taskMu.Lock()
@@ -237,6 +271,7 @@ func StartBackgroundDownload(task *DownloadTask, recordSuccess func(string, int6
 						os.Remove(partPath)
 						mu.Lock()
 						totalDownloaded -= localDownloaded
+						task.Parts[partIdx].Downloaded = false
 						localDownloaded = 0
 						mu.Unlock()
 						retries++
@@ -245,7 +280,6 @@ func StartBackgroundDownload(task *DownloadTask, recordSuccess func(string, int6
 
 					pool.Release(strconv.Itoa(workerID))
 					mu.Lock()
-					task.Parts[partIdx].Downloaded = true
 					task.WorkerCount++
 					mu.Unlock()
 

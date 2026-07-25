@@ -8,10 +8,10 @@ export default function DownloadPage() {
   const addTask = useStore((s) => s.addTask)
   const selectedTaskId = useStore((s) => s.selectedTaskId)
   const setSelectedTaskId = useStore((s) => s.setSelectedTaskId)
+  const settings = useStore((s) => s.settings)
   const [modalOpen, setModalOpen] = useState(false)
   const [url, setUrl] = useState('')
-  const [saveDir, setSaveDir] = useState('')
-  const [concurrency, setConcurrency] = useState(20)
+  const [concurrency, setConcurrency] = useState(settings?.defaultConcurrency || 20)
   const [filter, setFilter] = useState('all')
 
   const filteredTasks = tasks.filter((t) => {
@@ -23,6 +23,10 @@ export default function DownloadPage() {
   })
 
   const selectedTask = tasks.find((t) => t.id === selectedTaskId)
+
+  useEffect(() => {
+    setConcurrency(settings?.defaultConcurrency || 20)
+  }, [settings?.defaultConcurrency])
 
   useEffect(() => {
     const setupEvents = async () => {
@@ -44,7 +48,7 @@ export default function DownloadPage() {
       const api = (window as any).go.bindings.DownloadAPI
       const task = await api.CreateTask({
         url,
-        saveDir: saveDir || '',
+        saveDir: settings?.defaultSaveDir || '',
         concurrency,
         partSize: 10,
         maxRetry: 3,
@@ -176,10 +180,6 @@ export default function DownloadPage() {
           <div>
             <div style={{ marginBottom: 4, fontSize: 12, color: '#666' }}>下载链接</div>
             <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://github.com/..." />
-          </div>
-          <div>
-            <div style={{ marginBottom: 4, fontSize: 12, color: '#666' }}>保存到文件夹</div>
-            <Input value={saveDir} onChange={(e) => setSaveDir(e.target.value)} placeholder="D:\Downloads" />
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <div><span style={{ fontSize: 12, color: '#666' }}>并发数</span><InputNumber min={1} max={50} value={concurrency} onChange={(v) => setConcurrency(v || 20)} style={{ width: 80, marginLeft: 8 }} /></div>

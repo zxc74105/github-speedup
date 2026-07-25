@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+
+	"multi-proxy-downloader/core"
 )
 
 type Settings struct {
@@ -30,9 +32,7 @@ type ConfigAPI struct {
 }
 
 func NewConfigAPI() *ConfigAPI {
-	home, _ := os.UserHomeDir()
-	dir := filepath.Join(home, ".multi-proxy-downloader")
-	os.MkdirAll(dir, 0755)
+	dir := core.AppDir()
 	api := &ConfigAPI{
 		settingsPath: filepath.Join(dir, "settings.json"),
 	}
@@ -85,9 +85,9 @@ func (c *ConfigAPI) ResetSettings() Settings {
 }
 
 func (c *ConfigAPI) ExportRecords() (string, error) {
-	home, _ := os.UserHomeDir()
-	src := filepath.Join(home, ".multi-proxy-downloader", "proxy-records.json")
-	dst := filepath.Join(home, "Desktop", "proxy-records-export.json")
+	dir := core.AppDir()
+	src := filepath.Join(dir, "proxy-records.json")
+	dst := filepath.Join(dir, "proxy-records-export.json")
 	data, err := os.ReadFile(src)
 	if err != nil {
 		return "", err
@@ -97,7 +97,7 @@ func (c *ConfigAPI) ExportRecords() (string, error) {
 }
 
 func (c *ConfigAPI) ClearRecords() error {
-	home, _ := os.UserHomeDir()
-	path := filepath.Join(home, ".multi-proxy-downloader", "proxy-records.json")
+	dir := core.AppDir()
+	path := filepath.Join(dir, "proxy-records.json")
 	return os.WriteFile(path, []byte("[]"), 0644)
 }

@@ -64,10 +64,8 @@ func (d *DownloadAPI) SetCtx(ctx context.Context) {
 }
 
 func NewDownloadAPI(ctx context.Context) *DownloadAPI {
-	home, _ := os.UserHomeDir()
-	recordsDir := filepath.Join(home, ".multi-proxy-downloader")
-	os.MkdirAll(recordsDir, 0755)
-	recordsPath := filepath.Join(recordsDir, "proxy-records.json")
+	dir := core.AppDir()
+	recordsPath := filepath.Join(dir, "proxy-records.json")
 
 	api := &DownloadAPI{
 		ctx:         ctx,

@@ -49,6 +49,65 @@ func ReadLines(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
+func IsValidProxyDomain(domain string) bool {
+	if domain == "" {
+		return false
+	}
+	if strings.ContainsAny(domain, " \t\n\r") {
+		return false
+	}
+	if !strings.Contains(domain, ".") {
+		return false
+	}
+	// Allow optional http:// or https:// prefix, strip it for validation
+	cleanDomain := domain
+	if strings.HasPrefix(cleanDomain, "http://") || strings.HasPrefix(cleanDomain, "https://") {
+		cleanDomain = domain[strings.Index(domain, "://")+3:]
+	}
+	if cleanDomain == "" {
+		return false
+	}
+	// Reject lines that look like non-domain text (headers, comments, etc.)
+	if strings.ContainsAny(cleanDomain, "=/\\#@!~`\"'<>{}[]|") {
+		return false
+	}
+	// Reject Chinese/unicode characters
+	for _, r := range cleanDomain {
+		if r > 127 {
+			return false
+		}
+	}
+	return true
+}
+
+func EnsureScheme(domain string) string {
+	if strings.HasPrefix(domain, "http://") || strings.HasPrefix(domain, "https://") {
+		return domain
+	}
+	return "https://" + domain
+}
+
+func AppDir() string {
+	dir := "."
+	if exe, err := os.Executable(); err == nil {
+		dir = filepath.Dir(exe)
+	}
+	return dir
+}
+
+func FindProxiesFile() string {
+	paths := []string{
+		"proxies.json",
+		filepath.Join(AppDir(), "proxies.json"),
+	}
+	for _, p := range paths {
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+	return filepath.Join(AppDir(), "proxies.json")
+}
+
 func GetFileInfo(fileURL, proxyURL string) (int64, string, error) {
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -65,25 +124,26 @@ func GetFileInfo(fileURL, proxyURL string) (int64, string, error) {
 	fileName := ""
 
 	resp, err := client.Head(fileURL)
+	headSucceeded := false
 	if err == nil {
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			return 0, "", fmt.Errorf("server returned non-200 status: %v", resp.Status)
-		}
-		contentDisposition := resp.Header.Get("Content-Disposition")
-		if contentDisposition != "" {
-			parts := strings.SplitSeq(contentDisposition, ";")
-			for part := range parts {
-				part = strings.TrimSpace(part)
-				if value, ok := strings.CutPrefix(part, "filename="); ok {
-					fileName = strings.Trim(value, `"`)
-					break
+		resp.Body.Close()
+		if resp.StatusCode == http.StatusOK {
+			headSucceeded = true
+			contentDisposition := resp.Header.Get("Content-Disposition")
+			if contentDisposition != "" {
+				parts := strings.Split(contentDisposition, ";")
+				for _, part := range parts {
+					part = strings.TrimSpace(part)
+					if value, ok := strings.CutPrefix(part, "filename="); ok {
+						fileName = strings.Trim(value, `"`)
+						break
+					}
 				}
 			}
-		}
-		contentLengthStr := resp.Header.Get("Content-Length")
-		if contentLengthStr != "" {
-			contentLength, err = strconv.ParseInt(contentLengthStr, 10, 64)
+			contentLengthStr := resp.Header.Get("Content-Length")
+			if contentLengthStr != "" {
+				contentLength, _ = strconv.ParseInt(contentLengthStr, 10, 64)
+			}
 		}
 	}
 	if fileName == "" {
@@ -94,7 +154,7 @@ func GetFileInfo(fileURL, proxyURL string) (int64, string, error) {
 			fileName = "downloaded_file"
 		}
 	}
-	if contentLength != 0 {
+	if headSucceeded && contentLength > 0 {
 		return contentLength, fileName, nil
 	}
 
@@ -168,7 +228,7 @@ func (tr *trackReader) Read(p []byte) (n int, err error) {
 	return
 }
 
-func DownloadPartialFile(fileURL, proxyURL, outputPath string, startByte, endByte int64, timeout time.Duration, onProgress func(int64)) (int64, error) {
+func DownloadPartialFile(ctx context.Context, fileURL, proxyURL, outputPath string, startByte, endByte int64, timeout time.Duration, onProgress func(int64)) (int64, error) {
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   5 * time.Second,
@@ -186,10 +246,10 @@ func DownloadPartialFile(fileURL, proxyURL, outputPath string, startByte, endByt
 		transport.Proxy = http.ProxyURL(proxy)
 	}
 	client := &http.Client{Transport: transport}
-	ctx, cancel := context.WithCancel(context.Background())
+	dlCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", fileURL, nil)
+	req, err := http.NewRequestWithContext(dlCtx, "GET", fileURL, nil)
 	if err != nil {
 		return 0, err
 	}
@@ -213,13 +273,26 @@ func DownloadPartialFile(fileURL, proxyURL, outputPath string, startByte, endByt
 
 	var timer *time.Timer
 	if timeout > 0 {
-		timer = time.AfterFunc(timeout, func() { cancel() })
-		defer timer.Stop()
+		timer = time.NewTimer(timeout)
+		go func() {
+			select {
+			case <-timer.C:
+				cancel()
+			case <-dlCtx.Done():
+				if !timer.Stop() {
+					<-timer.C
+				}
+			}
+		}()
 	}
 
 	reader := io.Reader(resp.Body)
 	if timeout > 0 {
-		reader = &progressReader{Reader: reader, OnRead: func() { timer.Reset(timeout) }}
+		reader = &progressReader{Reader: reader, OnRead: func() {
+			if timer.Stop() {
+				timer.Reset(timeout)
+			}
+		}}
 	}
 	reader = &trackReader{Reader: reader, OnRead: func(n int) {
 		if onProgress != nil {
@@ -253,8 +326,8 @@ func ConcatenateFiles(outputPath, workDir string) error {
 		if err != nil {
 			return err
 		}
-		defer partFile.Close()
 		_, err = io.Copy(outFile, partFile)
+		partFile.Close()
 		if err != nil {
 			return err
 		}

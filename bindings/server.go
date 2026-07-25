@@ -108,6 +108,9 @@ func (s *HTTPService) handleStatus(w http.ResponseWriter, r *http.Request) {
 
 func (s *HTTPService) handleProxy(w http.ResponseWriter, r *http.Request) {
 	targetURL := strings.TrimPrefix(r.URL.Path, "/")
+	if r.URL.RawQuery != "" {
+		targetURL += "?" + r.URL.RawQuery
+	}
 	if targetURL == "" {
 		http.Error(w, "Usage: http://127.0.0.1:9090/<url-to-download>", http.StatusBadRequest)
 		return
@@ -135,6 +138,9 @@ func (s *HTTPService) handleProxy(w http.ResponseWriter, r *http.Request) {
 	var lastErr error
 	for _, domain := range activeDomains {
 		proxyURL := fmt.Sprintf("https://%s", domain)
+		if strings.HasPrefix(domain, "http://") || strings.HasPrefix(domain, "https://") {
+			proxyURL = domain
+		}
 		err := proxyRequest(w, r, targetURL, proxyURL)
 		if err == nil {
 			return

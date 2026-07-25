@@ -50,7 +50,7 @@ export default function ProxyPage() {
   const handleImport = async () => {
     try {
       const api = (window as any).go.bindings.ProxyAPI
-      const count = await api.ImportProxies('proxies.txt')
+      const count = await api.ImportProxies('proxies.json')
       const updated = await api.GetProxies()
       setProxies(updated)
       message.success(`导入 ${count} 个代理`)
