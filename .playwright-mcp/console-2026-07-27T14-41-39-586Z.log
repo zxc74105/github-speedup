@@ -1,4 +1,0 @@
-[     693ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:51234/node_modules/.vite/deps/chunk-HEOX6PIW.js?v=c5ee1772:20102
-[   50693ms] [ERROR] Warning: [antd: Form.Item] A `Form.Item` with a `name` prop must have a single child element. For information on how to render more complex form items, see https://u.ant.design/complex-form-item. @ http://127.0.0.1:51234/node_modules/.vite/deps/antd.js?v=c5ee1772:2164
-[   77948ms] [LOG] [vite] server connection lost. Polling for restart... @ http://127.0.0.1:51234/@vite/client:864
-[   88229ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:51234/node_modules/.vite/deps/chunk-HEOX6PIW.js?v=c5ee1772:20102

@@ -41,9 +41,13 @@
 - Retro：记录计划偏差，反馈到下一轮计划
 
 ## 启动方法
-启动 github-speedup.exe（必须使用以下方法，否则进程会被 bash 工具杀掉）：
+开发模式（源码运行）：
 ```bash
-powershell -Command "Start-Process -WindowStyle Hidden -FilePath 'D:\AI-Projects\github-speedup\build\bin\github-speedup.exe'"
+python main.py
+```
+打包版本（github-speedup.exe，使用 PyInstaller 构建）：
+```bash
+powershell -Command "Start-Process -WindowStyle Hidden -FilePath 'D:\AI-Projects\github-speedup\github-speedup.exe'"
 ```
 验证：`tasklist //FI "IMAGENAME eq github-speedup.exe"` 确认进程存在，然后 `curl -s "http://127.0.0.1:9090/health" --max-time 5` 返回 `{"status":"ok"}`。
 
@@ -56,12 +60,12 @@ GitHub 代理（gh-proxy.com 等）是 URL-prefix 反向代理，只代理 `gith
 测试代理时必须用 `https://github.com/...` 格式，**不能用** `https://raw.githubusercontent.com/...`（raw 域名不走代理）。
 - 正确测试 URL: `https://github.com/zxc74105/ceshi/blob/main/speedtest.txt`
 - 错误测试 URL: `https://raw.githubusercontent.com/zxc74105/ceshi/main/speedtest.txt`
-- 代码位置: `bindings/proxy.go` 中 `proxyTestURL` 常量
+- 代码位置: `github_speedup/proxy/proxy_checker.py` 中 `PROXY_TEST_URL` 常量
 - 所有代理列表中的域名都是 URL-prefix 反向代理（不是 CONNECT 代理），构造 URL 格式: `https://代理域名/https://github.com/原始路径`
 
 ### 浏览器头模拟
 所有出站 HTTP 请求必须携带完整 Chrome 浏览器头，否则很多代理返回 403/HTML 验证页。
-- 函数: `core/utils.go` 中 `ApplyBrowserHeaders(req *http.Request)`
-- 调用位置: `core/downloader.go`（HEAD + 下载请求）、`bindings/proxy.go`（测速）、`bindings/server.go`（被动加速）
+- 函数: `github_speedup/core/utils.py` 中 `apply_browser_headers(session: requests.Session)`
+- 调用位置: `github_speedup/core/downloader.py`（HEAD + 下载请求）、`github_speedup/proxy/proxy_checker.py`（测速）、`github_speedup/server/http_server.py`（被动加速）
 - 包含: User-Agent/Accept/Accept-Language/Sec-Fetch-* 等 14 个标准浏览器头
 

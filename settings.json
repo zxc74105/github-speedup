@@ -1,0 +1,18 @@
+{
+  "defaultSaveDir": "C:\\Users\\Administrator\\Downloads",
+  "defaultConcurrency": 20,
+  "partSize": 10,
+  "maxRetry": 3,
+  "timeout": 30,
+  "autoTestOnStart": true,
+  "silentSpeedThreshold": 1.0,
+  "silentLatencyThreshold": 500,
+  "tcpTimeout": 5,
+  "testFileSize": "1 MB",
+  "theme": "light",
+  "language": "zh-CN",
+  "checkUpdate": true,
+  "enableHTTPAPI": true,
+  "httpAPIPort": 9090,
+  "allowRemoteAccess": true
+}

@@ -1,0 +1,31 @@
+[2026-07-28 06:40:19.601] DOWNLOAD READY https://github.com/aifuqiang02/ai-ssh-assistant/releases/download/v1.8.23/AI-SSH-Assistant-1.8.23-setup-x64.exe | 143654078 bytes, 14 parts @ 10 MB, workers=20 proxies=19
+[2026-07-28 06:40:49.040] PARTOK gh.inkchills.cn part=2 bytes=10485760
+[2026-07-28 06:40:56.096] PARTOK gh.felicity.ac.cn part=1 bytes=10485760
+[2026-07-28 06:41:15.128] PARTOK edgeone.gh-proxy.org part=13 bytes=7339198
+[2026-07-28 06:41:30.997] PARTOK cdn.gh-proxy.org part=12 bytes=10485760
+[2026-07-28 06:41:31.818] PARTOK v6.gh-proxy.org part=11 bytes=10485760
+[2026-07-28 06:41:31.916] PARTOK gh-proxy.org part=10 bytes=10485760
+[2026-07-28 06:41:32.178] PARTOK gh.my-website.ccwu.cc part=9 bytes=10485760
+[2026-07-28 06:41:32.452] PARTOK jiashu.1win.eu.org part=8 bytes=10485760
+[2026-07-28 06:41:36.961] PARTOK tvv.tw part=7 bytes=10485760
+[2026-07-28 06:41:37.034] PARTOK v4.gh-proxy.org part=3 bytes=10485760
+[2026-07-28 06:41:37.730] PARTOK gh-proxy.com part=5 bytes=10485760
+[2026-07-28 06:41:39.332] PARTOK gp.zkitefly.eu.org part=0 bytes=10485760
+[2026-07-28 06:41:39.432] PARTOK gh.jasonzeng.dev part=4 bytes=10485760
+[2026-07-28 06:42:43.078] PARTOK git.yylx.win part=6 bytes=143654078
+[2026-07-28 06:42:43.079] DOWNLOAD COMPLETED https://github.com/aifuqiang02/ai-ssh-assistant/releases/download/v1.8.23/AI-SSH-Assistant-1.8.23-setup-x64.exe
+[2026-07-28 06:42:43.288] RECORDING 14 proxies:
+[2026-07-28 06:42:43.288] RECORD gh.inkchills.cn bytes=10485760
+[2026-07-28 06:42:43.289] RECORD gh.felicity.ac.cn bytes=10485760
+[2026-07-28 06:42:43.290] RECORD edgeone.gh-proxy.org bytes=7339198
+[2026-07-28 06:42:43.291] RECORD cdn.gh-proxy.org bytes=10485760
+[2026-07-28 06:42:43.292] RECORD v6.gh-proxy.org bytes=10485760
+[2026-07-28 06:42:43.293] RECORD gh-proxy.org bytes=10485760
+[2026-07-28 06:42:43.293] RECORD gh.my-website.ccwu.cc bytes=10485760
+[2026-07-28 06:42:43.294] RECORD jiashu.1win.eu.org bytes=10485760
+[2026-07-28 06:42:43.295] RECORD tvv.tw bytes=10485760
+[2026-07-28 06:42:43.296] RECORD v4.gh-proxy.org bytes=10485760
+[2026-07-28 06:42:43.297] RECORD gh-proxy.com bytes=10485760
+[2026-07-28 06:42:43.298] RECORD gp.zkitefly.eu.org bytes=10485760
+[2026-07-28 06:42:43.299] RECORD gh.jasonzeng.dev bytes=10485760
+[2026-07-28 06:42:43.300] RECORD git.yylx.win bytes=143654078

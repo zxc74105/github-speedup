@@ -1,3 +1,9 @@
+### v2.0.0
+
+- Complete rewrite from Go + Wails v2 to Python + PySide6 + PyInstaller.
+- Removed WebView2 dependency.
+- Standalone single .exe with no runtime requirements.
+
 ### v1.1.0
 
 - Added inactivity timeout for downloads (default 20s) to prevent hanging on slow proxies.

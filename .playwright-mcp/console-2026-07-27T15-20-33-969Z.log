@@ -1,4 +1,0 @@
-[     769ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://[::1]:5173/node_modules/.vite/deps/chunk-HEOX6PIW.js?v=c5ee1772:20102
-[   70658ms] [LOG] [vite] server connection lost. Polling for restart... @ http://[::1]:5173/@vite/client:864
-[  102027ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://[::1]:5173/node_modules/.vite/deps/chunk-HEOX6PIW.js?v=c5ee1772:20102
-[  231350ms] [LOG] [vite] server connection lost. Polling for restart... @ http://[::1]:5173/@vite/client:864

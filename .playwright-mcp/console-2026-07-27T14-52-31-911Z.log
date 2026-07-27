@@ -1,4 +1,0 @@
-[      66ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:51234/node_modules/.vite/deps/chunk-HEOX6PIW.js?v=c5ee1772:20102
-[   20135ms] [ERROR] Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. @ http://127.0.0.1:51234/node_modules/.vite/deps/antd.js?v=c5ee1772:2164
-[   20870ms] [ERROR] Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead. @ http://127.0.0.1:51234/node_modules/.vite/deps/antd.js?v=c5ee1772:2164
-[   78173ms] [LOG] [vite] server connection lost. Polling for restart... @ http://127.0.0.1:51234/@vite/client:864

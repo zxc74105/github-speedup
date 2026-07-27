@@ -2,15 +2,15 @@
 
 ## 测试环境
 - OS: Windows (win32)
-- Wails v2
-- Go (版本由 go.mod 决定)
-- Frontend: React + TypeScript + Ant Design + Zustand
+- Python 3.12+
+- PySide6
+- 打包工具: PyInstaller
 - 测试目标: Multi-Proxy Downloader 桌面应用
 
 ---
 
 ## TC001: 应用启动
-**步骤**: 启动 github-speedup.exe，检查进程存在
+**步骤**: `python main.py` 或启动 github-speedup.exe，检查进程存在
 **预期**: 进程正常运行，health 接口返回 {"status":"ok"}
 **判定**: 
 
@@ -75,7 +75,7 @@
 **判定**: 
 
 ## TC014: HTTP API 下载测试
-**步骤**: curl "http://127.0.0.1:9090/https://raw.githubusercontent.com/..."
+**步骤**: curl -x "http://127.0.0.1:9090" "https://raw.githubusercontent.com/..."
 **预期**: 返回文件内容，proxy-access.log 有记录，proxy-records.json 有记录
 **判定**: 
 
