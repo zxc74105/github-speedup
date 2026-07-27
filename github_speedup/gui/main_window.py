@@ -18,8 +18,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("GitHub Multi-Proxy Downloader")
-        self.setMinimumSize(1100, 700)
-        self.resize(1200, 780)
+        self.setMinimumSize(1800, 1000)
+        self.resize(1800, 1000)
 
         self.proxy_mgr = ProxyManager()
         self.records_mgr = RecordsManager()

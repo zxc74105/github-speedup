@@ -79,7 +79,6 @@ class SettingsPage(QWidget):
         s = self._settings
 
         dl_group = QGroupBox("⬇ 下载设置")
-        dl_group.setMinimumHeight(280)
         dl_form = QFormLayout(dl_group)
 
         self.save_dir = QLineEdit(s.defaultSaveDir)
@@ -117,7 +116,6 @@ class SettingsPage(QWidget):
         layout.addWidget(dl_group)
 
         px_group = QGroupBox("🌐 代理设置")
-        px_group.setMinimumHeight(230)
         px_form = QFormLayout(px_group)
 
         self.auto_test = QCheckBox("启动时自动测速")
@@ -145,7 +143,6 @@ class SettingsPage(QWidget):
         layout.addWidget(px_group)
 
         sv_group = QGroupBox("🔌 HTTP API 加速服务")
-        sv_group.setMinimumHeight(200)
         sv_form = QFormLayout(sv_group)
 
         status_label = QLabel("状态: ")
@@ -174,7 +171,6 @@ class SettingsPage(QWidget):
         layout.addWidget(sv_group)
 
         data_group = QGroupBox("🗄 数据管理")
-        data_group.setMinimumHeight(100)
         data_form = QFormLayout(data_group)
         data_btns = QHBoxLayout()
 
