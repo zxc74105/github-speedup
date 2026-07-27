@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QStackedWidget, QLabel, QFrame,
+    QPushButton, QStackedWidget, QLabel, QFrame, QScrollArea,
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QFont
@@ -18,8 +18,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("GitHub Multi-Proxy Downloader")
-        self.setMinimumSize(1800, 1000)
-        self.resize(1800, 1000)
+        self.setMinimumSize(900, 600)
+        self.resize(1280, 800)
 
         self.proxy_mgr = ProxyManager()
         self.records_mgr = RecordsManager()
@@ -74,9 +74,19 @@ class MainWindow(QMainWindow):
         self.proxy_page = ProxyPage(self.proxy_mgr, self.records_mgr)
         self.settings_page = SettingsPage(self.settings_mgr, self.server, self.proxy_mgr, self.records_mgr)
 
+        settings_scroll = QScrollArea()
+        settings_scroll.setWidget(self.settings_page)
+        settings_scroll.setWidgetResizable(True)
+        settings_scroll.setFrameShape(QFrame.Shape.NoFrame)
+
+        proxy_scroll = QScrollArea()
+        proxy_scroll.setWidget(self.proxy_page)
+        proxy_scroll.setWidgetResizable(True)
+        proxy_scroll.setFrameShape(QFrame.Shape.NoFrame)
+
         self.content_stack.addWidget(self.download_page)
-        self.content_stack.addWidget(self.proxy_page)
-        self.content_stack.addWidget(self.settings_page)
+        self.content_stack.addWidget(proxy_scroll)
+        self.content_stack.addWidget(settings_scroll)
 
         root.addWidget(sidebar)
         root.addWidget(self.content_stack, 1)
