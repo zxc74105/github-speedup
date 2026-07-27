@@ -23,7 +23,7 @@ class SettingsPage(QWidget):
         self._records_mgr = records_mgr
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setContentsMargins(12, 12, 12, 12)
         layout.setSpacing(16)
 
         title = QLabel("⚙ 设置")
@@ -52,11 +52,11 @@ class SettingsPage(QWidget):
             QGroupBox {
                 font-weight: 600; font-size: 13px;
                 border: 1px solid #e8e8e8; border-radius: 6px;
-                margin-top: 16px; padding: 20px 16px 16px;
+                margin-top: 12px; padding: 16px 12px 12px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
-                left: 16px; padding: 0 8px;
+                left: 12px; padding: 0 6px;
                 background: white;
             }
             #saveBtn {
@@ -70,7 +70,7 @@ class SettingsPage(QWidget):
             }
             QPushButton:hover { border-color: #155DFC; color: #155DFC; }
             QLineEdit, QSpinBox, QComboBox, QDoubleSpinBox {
-                padding: 6px 10px; border: 1px solid #d9d9d9;
+                padding: 4px 8px; border: 1px solid #d9d9d9;
                 border-radius: 4px; font-size: 13px;
             }
         """)
@@ -80,8 +80,6 @@ class SettingsPage(QWidget):
 
         dl_group = QGroupBox("⬇ 下载设置")
         dl_form = QFormLayout(dl_group)
-        dl_form.setVerticalSpacing(10)
-        dl_form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.save_dir = QLineEdit(s.defaultSaveDir)
         dir_layout = QHBoxLayout()
@@ -119,8 +117,6 @@ class SettingsPage(QWidget):
 
         px_group = QGroupBox("🌐 代理设置")
         px_form = QFormLayout(px_group)
-        px_form.setVerticalSpacing(10)
-        px_form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.auto_test = QCheckBox("启动时自动测速")
         self.auto_test.setChecked(s.autoTestOnStart)
@@ -148,8 +144,6 @@ class SettingsPage(QWidget):
 
         sv_group = QGroupBox("🔌 HTTP API 加速服务")
         sv_form = QFormLayout(sv_group)
-        sv_form.setVerticalSpacing(10)
-        sv_form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         status_label = QLabel("状态: ")
         self.server_status = QLabel("停止")
@@ -178,7 +172,6 @@ class SettingsPage(QWidget):
 
         data_group = QGroupBox("🗄 数据管理")
         data_form = QFormLayout(data_group)
-        data_form.setVerticalSpacing(10)
         data_btns = QHBoxLayout()
 
         btn_export = QPushButton("📤 导出记录")
