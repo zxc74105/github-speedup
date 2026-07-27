@@ -1,0 +1,133 @@
+- generic [ref=f2e3] [box=0,0,1280,720]:
+  - complementary [ref=f2e4] [box=0,0,180,720]:
+    - generic [ref=f2e5] [box=0,0,179,720]:
+      - generic [ref=f2e6] [box=0,0,179,48]: Multi-Proxy DL
+      - menu [ref=f2e8] [box=0,56,179,114]:
+        - menuitem "download 下载管理" [ref=f2e9] [cursor=pointer] [box=0,56,171,38]:
+          - img "download" [ref=f2e10] [box=24,68,14,14]
+          - generic [ref=f2e13] [box=48,56,107,38]: 下载管理
+        - menuitem "global 代理管理" [ref=f2e14] [cursor=pointer] [box=0,94,171,38]:
+          - img "global" [ref=f2e15] [box=24,106,14,14]
+          - generic [ref=f2e18] [box=48,94,107,38]: 代理管理
+        - menuitem "setting 设置" [active] [ref=f2e19] [cursor=pointer] [box=0,132,171,38]:
+          - img "setting" [ref=f2e20] [box=24,144,14,14]
+          - generic [ref=f2e23] [box=48,132,105,38]: 设置
+  - main [ref=f2e24] [box=180,0,1100,720]:
+    - generic [ref=f2e253] [box=410,0,640,2156]:
+      - heading "⚙️ 设置" [level=3] [ref=f2e254] [box=434,24,592,24]
+      - generic [ref=f2e255] [box=434,68,592,2016]:
+        - generic [ref=f2e256] [box=434,68,592,535]:
+          - generic [ref=f2e257] [box=435,69,590,56]: ⬇️ 下载设置
+          - generic [ref=f2e260] [box=435,124,590,478]:
+            - generic [ref=f2e262] [box=459,148,542,62]:
+              - generic "默认下载文件夹" [ref=f2e264] [box=459,148,111,22]
+              - generic [ref=f2e267] [box=459,178,542,32]:
+                - textbox "D:\\Downloads" [ref=f2e268] [box=459,178,320,32]
+                - button "浏 览" [ref=f2e269] [cursor=pointer] [box=787,181,48,24]
+            - generic [ref=f2e272] [box=459,234,542,62]:
+              - generic "默认并发数" [ref=f2e274] [box=459,234,83,22]
+              - generic [ref=f2e278] [box=459,264,120,32]:
+                - spinbutton "默认并发数" [ref=f2e279] [box=471,265,96,30]
+                - generic [box=578,265,0,30]:
+                  - button "Increase Value" [ref=f2e280] [cursor=pointer] [box=578,265,1,15]:
+                    - img "up" [ref=f2e281] [box=576,269,7,7]
+                  - button "Decrease Value" [ref=f2e284] [cursor=pointer] [box=578,280,1,15]:
+                    - img "down" [ref=f2e285] [box=576,285,7,7]
+            - generic [ref=f2e289] [box=459,320,542,62]:
+              - generic "分片大小 (MB)" [ref=f2e291] [box=459,320,102,22]
+              - generic [ref=f2e295] [cursor=pointer] [box=459,350,542,32]:
+                - combobox "分片大小 (MB)" [ref=f2e297] [box=471,355,500,22]
+                - img "down" [ref=f2e299] [box=977,360,12,12]
+            - generic [ref=f2e303] [box=459,406,542,62]:
+              - generic "最大重试次数" [ref=f2e305] [box=459,406,97,22]
+              - generic [ref=f2e309] [cursor=pointer] [box=459,436,542,32]:
+                - combobox "最大重试次数" [ref=f2e311] [box=471,441,500,22]
+                - img "down" [ref=f2e313] [box=977,446,12,12]
+            - generic [ref=f2e317] [box=459,492,542,62]:
+              - generic "请求超时 (秒)" [ref=f2e319] [box=459,492,95,22]
+              - generic [ref=f2e323] [cursor=pointer] [box=459,522,542,32]:
+                - combobox "请求超时 (秒)" [ref=f2e325] [box=471,527,500,22]
+                - img "down" [ref=f2e327] [box=977,532,12,12]
+        - generic [ref=f2e330] [box=434,619,592,535]:
+          - generic [ref=f2e331] [box=435,620,590,56]: 🌐 代理设置
+          - generic [ref=f2e334] [box=435,675,590,478]:
+            - generic [ref=f2e336] [box=459,699,542,62]:
+              - generic "启动时自动测速" [ref=f2e338] [box=459,699,111,22]
+              - switch "启动时自动测速" [ref=f2e342] [cursor=pointer] [box=459,734,44,22]
+            - generic [ref=f2e346] [box=459,785,542,62]:
+              - generic "静默速度阈值 (Mbps)" [ref=f2e348] [box=459,785,144,22]
+              - generic [ref=f2e352] [box=459,815,120,32]:
+                - spinbutton "静默速度阈值 (Mbps)" [ref=f2e353] [box=471,816,96,30]
+                - generic [box=578,816,0,30]:
+                  - button "Increase Value" [ref=f2e354] [cursor=pointer] [box=578,816,1,15]:
+                    - img "up" [ref=f2e355] [box=576,820,7,7]
+                  - button "Decrease Value" [ref=f2e358] [cursor=pointer] [box=578,831,1,15]:
+                    - img "down" [ref=f2e359] [box=576,836,7,7]
+            - generic [ref=f2e363] [box=459,871,542,62]:
+              - generic "静默延迟阈值 (ms)" [ref=f2e365] [box=459,871,127,22]
+              - generic [ref=f2e369] [box=459,901,120,32]:
+                - spinbutton "静默延迟阈值 (ms)" [ref=f2e370] [box=471,902,96,30]
+                - generic [box=578,902,0,30]:
+                  - button "Increase Value" [ref=f2e371] [cursor=pointer] [box=578,902,1,15]:
+                    - img "up" [ref=f2e372] [box=576,906,7,7]
+                  - button "Decrease Value" [ref=f2e375] [cursor=pointer] [box=578,917,1,15]:
+                    - img "down" [ref=f2e376] [box=576,922,7,7]
+            - generic [ref=f2e380] [box=459,957,542,62]:
+              - generic "TCP 连接超时 (秒)" [ref=f2e382] [box=459,957,122,22]
+              - generic [ref=f2e386] [cursor=pointer] [box=459,987,542,32]:
+                - combobox "TCP 连接超时 (秒)" [ref=f2e388] [box=471,992,500,22]
+                - img "down" [ref=f2e390] [box=977,997,12,12]
+            - generic [ref=f2e394] [box=459,1043,542,62]:
+              - generic "测速测试文件大小" [ref=f2e396] [box=459,1043,125,22]
+              - generic [ref=f2e400] [cursor=pointer] [box=459,1073,542,32]:
+                - combobox "测速测试文件大小" [ref=f2e402] [box=471,1078,500,22]
+                - img "down" [ref=f2e404] [box=977,1083,12,12]
+        - generic [ref=f2e407] [box=434,1170,592,363]:
+          - generic [ref=f2e408] [box=435,1171,590,56]: 🎨 外观
+          - generic [ref=f2e411] [box=435,1226,590,306]:
+            - generic [ref=f2e413] [box=459,1250,542,62]:
+              - generic "主题" [ref=f2e415] [box=459,1250,41,22]
+              - radiogroup [ref=f2e419] [box=459,1285,293,22]:
+                - generic [ref=f2e420] [cursor=pointer] [box=459,1285,83,22]:
+                  - radio "🌞 浅色" [ref=f2e422] [box=460,1289,14,14]
+                  - generic [ref=f2e423] [box=475,1285,67,22]: 🌞 浅色
+                - generic [ref=f2e424] [cursor=pointer] [box=550,1285,83,22]:
+                  - radio "🌙 深色" [ref=f2e426] [box=551,1289,14,14]
+                  - generic [ref=f2e427] [box=566,1285,67,22]: 🌙 深色
+                - generic [ref=f2e428] [cursor=pointer] [box=641,1285,111,22]:
+                  - radio "💻 跟随系统" [ref=f2e430] [box=642,1289,14,14]
+                  - generic [ref=f2e431] [box=657,1285,95,22]: 💻 跟随系统
+            - generic [ref=f2e433] [box=459,1336,542,62]:
+              - generic "语言" [ref=f2e435] [box=459,1336,41,22]
+              - generic [ref=f2e439] [cursor=pointer] [box=459,1366,160,32]:
+                - combobox "语言" [ref=f2e441] [box=471,1371,118,22]
+                - img "down" [ref=f2e443] [box=595,1376,12,12]
+            - generic [ref=f2e447] [box=459,1422,542,62]:
+              - generic "启动时检查更新" [ref=f2e449] [box=459,1422,111,22]
+              - switch "启动时检查更新" [ref=f2e453] [cursor=pointer] [box=459,1457,44,22]
+        - generic [ref=f2e456] [box=434,1549,592,382]:
+          - generic [ref=f2e457] [box=435,1550,590,56]: 🔌 HTTP API 加速服务
+          - generic [ref=f2e460] [box=435,1605,590,325]:
+            - generic [ref=f2e461] [box=459,1629,542,31]: ⚡ 此功能永久开启，无需配置
+            - generic [ref=f2e463] [box=459,1672,542,62]:
+              - generic "监听端口" [ref=f2e465] [box=459,1672,69,22]
+              - spinbutton "监听端口" [disabled] [ref=f2e470] [box=471,1703,96,30]
+            - generic [ref=f2e472] [box=459,1758,542,62]:
+              - generic "允许远程访问" [ref=f2e474] [box=459,1758,97,22]
+              - switch "允许远程访问" [disabled] [ref=f2e478] [box=459,1793,44,22]
+            - generic [ref=f2e481] [box=459,1844,542,62]:
+              - generic [ref=f2e482] [box=471,1852,518,22]:
+                - text: "状态:"
+                - generic [ref=f2e483] [box=501,1852,40,22]: 停止
+              - generic [ref=f2e484] [box=471,1878,518,20]:
+                - text: "用法:"
+                - code [ref=f2e485] [box=501,1881,350,14]: http://127.0.0.1:9090/https://github.com/.../file.zip
+        - generic [ref=f2e486] [box=434,1947,592,137]:
+          - generic [ref=f2e487] [box=435,1948,590,56]: 🗄️ 数据管理
+          - generic [ref=f2e491] [box=459,2027,398,32]:
+            - button "📤 导出记录" [ref=f2e493] [cursor=pointer] [box=459,2027,111,32]
+            - button "🗑 清除所有记录" [ref=f2e496] [cursor=pointer] [box=578,2027,139,32]
+            - button "⟲ 重置所有设置" [ref=f2e499] [cursor=pointer] [box=725,2027,132,32]
+      - generic [ref=f2e502] [box=819,2100,207,32]:
+        - button "恢复默认" [ref=f2e504] [cursor=pointer] [box=819,2100,88,32]
+        - button "💾 保存设置" [ref=f2e507] [cursor=pointer] [box=915,2100,111,32]

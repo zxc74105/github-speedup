@@ -7,22 +7,24 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	"multi-proxy-downloader/core"
 )
 
 type HTTPService struct {
-	mu       sync.Mutex
-	server   *http.Server
-	running  bool
-	addr     string
-	proxyAPI *ProxyAPI
+	mu          sync.Mutex
+	server      *http.Server
+	running     bool
+	addr        string
+	proxyAPI    *ProxyAPI
+	downloadAPI *DownloadAPI
 }
 
-func NewHTTPService(proxyAPI *ProxyAPI) *HTTPService {
-	return &HTTPService{proxyAPI: proxyAPI}
+func NewHTTPService(proxyAPI *ProxyAPI, downloadAPI *DownloadAPI) *HTTPService {
+	return &HTTPService{proxyAPI: proxyAPI, downloadAPI: downloadAPI}
 }
 
 func (s *HTTPService) Start(port int, allowRemote bool) error {
@@ -39,14 +41,19 @@ func (s *HTTPService) Start(port int, allowRemote bool) error {
 	}
 	s.addr = fmt.Sprintf("%s:%d", host, port)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", s.handleHealth)
-	mux.HandleFunc("/api/status", s.handleStatus)
-	mux.HandleFunc("/", s.handleProxy)
-
+	// Use a raw HandlerFunc to avoid ServeMux's double-slash redirect
 	s.server = &http.Server{
 		Addr:    s.addr,
-		Handler: mux,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/health":
+				s.handleHealth(w, r)
+			case "/api/status":
+				s.handleStatus(w, r)
+			default:
+				s.handleProxy(w, r)
+			}
+		}),
 	}
 
 	go func() {
@@ -116,54 +123,51 @@ func (s *HTTPService) handleProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Fix browser path normalization: "https:/xxx" -> "https://xxx"
+	if strings.HasPrefix(targetURL, "https:/") && !strings.HasPrefix(targetURL, "https://") {
+		targetURL = "https://" + targetURL[len("https:/"):]
+	} else if strings.HasPrefix(targetURL, "http:/") && !strings.HasPrefix(targetURL, "http://") {
+		targetURL = "http://" + targetURL[len("http:/"):]
+	}
+
 	// Ensure it has a scheme
 	if !strings.HasPrefix(targetURL, "http://") && !strings.HasPrefix(targetURL, "https://") {
 		targetURL = "https://" + targetURL
 	}
 
+	log := GetLogger()
+	log.Log("REQUEST %s from %s", targetURL, r.RemoteAddr)
+
 	proxies := s.proxyAPI.GetProxies()
-	var activeDomains []string
-	for _, p := range proxies {
-		if p.Status == "active" && p.Enabled {
-			activeDomains = append(activeDomains, p.Domain)
-		}
-	}
-
-	if len(activeDomains) == 0 {
-		http.Error(w, "no available proxies", http.StatusServiceUnavailable)
-		return
-	}
-
-	// Rotate through proxies
 	var lastErr error
-	for _, domain := range activeDomains {
-		proxyURL := fmt.Sprintf("https://%s", domain)
-		if strings.HasPrefix(domain, "http://") || strings.HasPrefix(domain, "https://") {
-			proxyURL = domain
+	for _, p := range proxies {
+		if p.Status != "active" || !p.Enabled || p.Scheme == "" {
+			continue
 		}
-		err := proxyRequest(w, r, targetURL, proxyURL)
-		if err == nil {
+		proxyURL := core.BuildProxyURL(p.Scheme, p.Domain, targetURL)
+		log.Log("TRY %s", p.Domain)
+
+		start := time.Now()
+		bytesWritten, err := proxyRequest(w, r, targetURL, proxyURL)
+		elapsed := time.Since(start).Seconds()
+		if err == nil && elapsed > 0 && bytesWritten > 0 {
+			speed := float64(bytesWritten) / elapsed * 8 / 1000000
+			log.Log("SUCCESS %s - %d bytes, %.1f Mbps", p.Domain, bytesWritten, speed)
+			if s.downloadAPI != nil {
+				s.downloadAPI.RecordProxySuccess(p.Domain, bytesWritten, speed)
+			}
 			return
 		}
+		log.Log("FAIL %s: %v", p.Domain, err)
 		lastErr = err
 	}
 
+	log.Log("ALL FAILED: %v", lastErr)
 	http.Error(w, fmt.Sprintf("all proxies failed: %v", lastErr), http.StatusBadGateway)
 }
 
-func proxyRequest(w http.ResponseWriter, r *http.Request, targetURL, proxyURL string) error {
-	target, err := url.Parse(targetURL)
-	if err != nil {
-		return fmt.Errorf("invalid target URL: %w", err)
-	}
-
-	proxy, err := url.Parse(proxyURL)
-	if err != nil {
-		return fmt.Errorf("invalid proxy URL: %w", err)
-	}
-
+func proxyRequest(w http.ResponseWriter, r *http.Request, targetURL, proxyURL string) (int64, error) {
 	transport := &http.Transport{
-		Proxy: http.ProxyURL(proxy),
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
@@ -177,31 +181,40 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, targetURL, proxyURL st
 
 	client := &http.Client{
 		Transport: transport,
-		Timeout:   0, // no timeout - let the stream flow
+		Timeout:   0,
 	}
 
-	proxyReq, err := http.NewRequestWithContext(r.Context(), r.Method, target.String(), r.Body)
+	proxyReq, err := http.NewRequestWithContext(r.Context(), r.Method, proxyURL, r.Body)
 	if err != nil {
-		return fmt.Errorf("create request: %w", err)
+		return 0, fmt.Errorf("create request: %w", err)
 	}
 
-	// Copy headers from original request
 	for key, values := range r.Header {
 		for _, v := range values {
 			proxyReq.Header.Add(key, v)
 		}
 	}
 
-	// Set X-Forwarded-For
+	// Set browser-like defaults for any missing headers
+	core.ApplyBrowserHeaders(proxyReq)
+
 	proxyReq.Header.Set("X-Forwarded-For", r.RemoteAddr)
 
 	resp, err := client.Do(proxyReq)
 	if err != nil {
-		return fmt.Errorf("proxy request failed: %w", err)
+		return 0, fmt.Errorf("proxy request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
-	// Copy response headers
+	if resp.StatusCode >= 400 {
+		return 0, fmt.Errorf("proxy returned %d", resp.StatusCode)
+	}
+
+	contentType := resp.Header.Get("Content-Type")
+	if strings.Contains(strings.ToLower(contentType), "text/html") {
+		return 0, fmt.Errorf("proxy returned text/html (landing page)")
+	}
+
 	for key, values := range resp.Header {
 		for _, v := range values {
 			w.Header().Add(key, v)
@@ -210,6 +223,6 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, targetURL, proxyURL st
 	w.Header().Set("X-Proxy", proxyURL)
 	w.WriteHeader(resp.StatusCode)
 
-	_, err = io.Copy(w, resp.Body)
-	return err
+	written, err := io.Copy(w, resp.Body)
+	return written, err
 }

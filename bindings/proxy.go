@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -28,12 +27,12 @@ type ProxyAPI struct {
 }
 
 type ProxyItem struct {
-	Domain  string `json:"domain"`
+	Domain  string `json:"domain"`  // raw domain, NO scheme prefix
+	Scheme  string `json:"scheme"`  // "https", "http", or "" (untested)
 	Enabled bool   `json:"enabled"`
 	Status  string `json:"status"`
 	Latency string `json:"latency"`
 	Speed   string `json:"speed"`
-	Type    string `json:"type"`
 }
 
 type PreflightResult struct {
@@ -44,7 +43,8 @@ type PreflightResult struct {
 }
 
 type ProxyTestResult struct {
-	Domain  string `json:"domain"`
+	Domain  string `json:"domain"`  // raw domain
+	Scheme  string `json:"scheme"`  // detected scheme
 	Latency string `json:"latency"`
 	Speed   string `json:"speed"`
 	Status  string `json:"status"`
@@ -75,6 +75,14 @@ func (p *ProxyAPI) loadProxies() {
 	}
 	var items []ProxyItem
 	if json.Unmarshal(data, &items) == nil && len(items) > 0 {
+		// Migrate: strip scheme from domain if present, set Scheme field
+		for i := range items {
+			if items[i].Scheme == "" && (strings.HasPrefix(items[i].Domain, "http://") || strings.HasPrefix(items[i].Domain, "https://")) {
+				parts := strings.SplitN(items[i].Domain, "://", 2)
+				items[i].Scheme = parts[0]
+				items[i].Domain = parts[1]
+			}
+		}
 		p.proxies = items
 		return
 	}
@@ -96,50 +104,21 @@ func (p *ProxyAPI) loadDefaultProxies() []ProxyItem {
 		}
 	}
 
-	// Deduplicate and validate
-	var cleanDomains []string
 	seen := map[string]bool{}
+	items := make([]ProxyItem, 0, len(domains))
 	for _, d := range domains {
 		d = strings.TrimSpace(d)
+		d = core.StripScheme(d)
 		if d == "" || seen[d] || !core.IsValidProxyDomain(d) {
 			continue
 		}
 		seen[d] = true
-		cleanDomains = append(cleanDomains, d)
-	}
-
-	// Test all proxies concurrently, keep only working ones
-	var mu sync.Mutex
-	var items []ProxyItem
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, 20) // max 20 concurrent tests
-	for _, d := range cleanDomains {
-		wg.Add(1)
-		sem <- struct{}{}
-		go func(domain string) {
-			defer wg.Done()
-			defer func() { <-sem }()
-			result := testSingleProxy(domain)
-			if result.Status == "offline" {
-				return
-			}
-			mu.Lock()
-			items = append(items, ProxyItem{
-				Domain:  result.Domain,
-				Enabled: true,
-				Status:  result.Status,
-				Latency: result.Latency,
-				Speed:   result.Speed,
-				Type:    "contribute",
-			})
-			mu.Unlock()
-		}(d)
-	}
-	wg.Wait()
-
-	sortProxiesBySpeed(items)
-	if items == nil {
-		items = []ProxyItem{}
+		items = append(items, ProxyItem{
+			Domain:  d,
+			Scheme:  "https",
+			Enabled: true,
+			Status:  "active",
+		})
 	}
 	return items
 }
@@ -177,18 +156,15 @@ func parseLatencyMs(latency string) int {
 
 func sortProxiesBySpeed(proxies []ProxyItem) {
 	sort.SliceStable(proxies, func(i, j int) bool {
-		// Status priority: active (0) > silent (1) > offline/checking (2)
 		statusOrder := map[string]int{"active": 0, "silent": 1, "offline": 2, "checking": 3}
 		oi := statusOrder[proxies[i].Status]
 		oj := statusOrder[proxies[j].Status]
 		if oi != oj {
 			return oi < oj
 		}
-		// Within same status: sort by speed descending (higher Mbps first)
 		if oi == 0 {
 			return parseSpeedMbps(proxies[i].Speed) > parseSpeedMbps(proxies[j].Speed)
 		}
-		// Silent: sort by latency ascending
 		if oi == 1 {
 			return parseLatencyMs(proxies[i].Latency) < parseLatencyMs(proxies[j].Latency)
 		}
@@ -209,6 +185,7 @@ func (p *ProxyAPI) TestAllProxies() error {
 			defer wg.Done()
 			result := testSingleProxy(proxies[idx].Domain)
 			p.mu.Lock()
+			proxies[idx].Scheme = result.Scheme
 			proxies[idx].Domain = result.Domain
 			proxies[idx].Latency = result.Latency
 			proxies[idx].Speed = result.Speed
@@ -226,10 +203,11 @@ func (p *ProxyAPI) TestAllProxies() error {
 }
 
 func (p *ProxyAPI) TestProxy(domain string) ProxyTestResult {
-	result := testSingleProxy(domain)
+	result := testSingleProxy(core.StripScheme(domain))
 	p.mu.Lock()
 	for i, pr := range p.proxies {
-		if pr.Domain == domain {
+		if pr.Domain == core.StripScheme(domain) {
+			p.proxies[i].Scheme = result.Scheme
 			p.proxies[i].Domain = result.Domain
 			p.proxies[i].Latency = result.Latency
 			p.proxies[i].Speed = result.Speed
@@ -245,8 +223,9 @@ func (p *ProxyAPI) TestProxy(domain string) ProxyTestResult {
 func (p *ProxyAPI) ToggleProxy(domain string, enabled bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	rawDomain := core.StripScheme(domain)
 	for i, pr := range p.proxies {
-		if pr.Domain == domain {
+		if pr.Domain == rawDomain {
 			p.proxies[i].Enabled = enabled
 			break
 		}
@@ -268,11 +247,12 @@ func (p *ProxyAPI) ImportProxies(filePath string) (int, error) {
 	}
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
+		line = core.StripScheme(line)
 		if line == "" || existing[line] {
 			continue
 		}
-		p.proxies = append(p.proxies, ProxyItem{Domain: core.EnsureScheme(line), Enabled: true, Status: "active", Type: "user"})
-		existing[core.EnsureScheme(line)] = true
+		p.proxies = append(p.proxies, ProxyItem{Domain: line, Enabled: true, Status: "active"})
+		existing[line] = true
 		count++
 	}
 	p.saveProxies()
@@ -310,6 +290,7 @@ func (p *ProxyAPI) PreflightCheck() PreflightResult {
 			defer wg.Done()
 			result := testSingleProxy(proxies[idx].Domain)
 			p.mu.Lock()
+			proxies[idx].Scheme = result.Scheme
 			proxies[idx].Domain = result.Domain
 			proxies[idx].Latency = result.Latency
 			proxies[idx].Speed = result.Speed
@@ -354,76 +335,85 @@ func (p *ProxyAPI) GetSilentProxies() []string {
 func (p *ProxyAPI) UnsilenceProxy(domain string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	rawDomain := core.StripScheme(domain)
 	for i, d := range p.silentList {
-		if d == domain {
+		if d == rawDomain {
 			p.silentList = append(p.silentList[:i], p.silentList[i+1:]...)
 			break
 		}
 	}
 }
 
-// Use a small real file for proxy testing (fast, reliable)
-const proxyTestURL = "https://raw.githubusercontent.com/curl/curl/master/README.md"
+const proxyTestURL = "https://github.com/zxc74105/ceshi/blob/main/speedtest.txt"
 
 func testSingleProxy(domain string) ProxyTestResult {
-	// Strip any existing scheme, we re-add our own
-	if strings.Contains(domain, "://") {
-		parts := strings.SplitN(domain, "://", 2)
-		domain = parts[1]
-	}
-	// Try https first, fallback to http
+	rawDomain := core.StripScheme(domain)
+	// These are URL-prefix-based reverse proxies, NOT CONNECT proxies.
+	// Just make a direct GET request to the full URL.
 	for _, scheme := range []string{"https", "http"} {
-		proxyURL := fmt.Sprintf("%s://%s", scheme, domain)
-		testURL := fmt.Sprintf("%s/%s", proxyURL, proxyTestURL)
+		proxyURL := core.BuildProxyURL(scheme, rawDomain, proxyTestURL)
 
 		start := time.Now()
-		transport := &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-				Renegotiation:      tls.RenegotiateFreelyAsClient,
-			},
-			DialContext: (&net.Dialer{
-				Timeout:   8 * time.Second,
-				KeepAlive: 10 * time.Second,
-			}).DialContext,
-		}
-		if u, err := url.Parse(proxyURL); err == nil {
-			transport.Proxy = http.ProxyURL(u)
-		}
-
 		client := &http.Client{
-			Transport: transport,
-			Timeout:   15 * time.Second,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+					Renegotiation:      tls.RenegotiateFreelyAsClient,
+				},
+				DialContext: (&net.Dialer{
+					Timeout:   8 * time.Second,
+					KeepAlive: 10 * time.Second,
+				}).DialContext,
+			},
+			Timeout: 15 * time.Second,
 		}
 
-		resp, err := client.Get(testURL)
+		req, err := http.NewRequest("GET", proxyURL, nil)
 		if err != nil {
 			continue
 		}
-		defer resp.Body.Close()
+		core.ApplyBrowserHeaders(req)
+		resp, err := client.Do(req)
+		if err != nil {
+			continue
+		}
 
 		latency := time.Since(start)
 		latencyStr := fmt.Sprintf("%d ms", latency.Milliseconds())
 
+		ct := resp.Header.Get("Content-Type")
+		if strings.Contains(ct, "text/html") {
+			resp.Body.Close()
+			continue
+		}
+
 		start = time.Now()
-		buf := make([]byte, 256*1024)
-		n, _ := resp.Body.Read(buf)
+		var totalBytes int64
+		buf := make([]byte, 32*1024)
+		for {
+			n, err := resp.Body.Read(buf)
+			totalBytes += int64(n)
+			if err != nil {
+				break
+			}
+		}
+		resp.Body.Close()
 		elapsed := time.Since(start).Seconds()
 
 		status := "active"
 		speedStr := "N/A"
-		if elapsed > 0 && n > 0 {
-			speed := float64(n) / elapsed * 8 / 1000000
+		if elapsed > 0 && totalBytes > 0 {
+			speed := float64(totalBytes) / elapsed * 8 / 1000000
 			speedStr = fmt.Sprintf("%.1f Mbps", speed)
-			if speed < 1.0 {
+			if speed < 0.1 {
 				status = "silent"
 			}
 		}
-		if latency > 500*time.Millisecond {
+		if latency > 2000*time.Millisecond {
 			status = "silent"
 		}
 
-		return ProxyTestResult{Domain: proxyURL, Latency: latencyStr, Speed: speedStr, Status: status}
+		return ProxyTestResult{Domain: rawDomain, Scheme: scheme, Latency: latencyStr, Speed: speedStr, Status: status}
 	}
-	return ProxyTestResult{Domain: domain, Latency: "N/A", Speed: "N/A", Status: "offline"}
+	return ProxyTestResult{Domain: rawDomain, Scheme: "", Latency: "N/A", Speed: "N/A", Status: "offline"}
 }

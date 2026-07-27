@@ -14,10 +14,18 @@ export function GetSettings() {
   return window['go']['bindings']['ConfigAPI']['GetSettings']();
 }
 
+export function PickDirectory() {
+  return window['go']['bindings']['ConfigAPI']['PickDirectory']();
+}
+
 export function ResetSettings() {
   return window['go']['bindings']['ConfigAPI']['ResetSettings']();
 }
 
 export function SaveSettings(arg1) {
   return window['go']['bindings']['ConfigAPI']['SaveSettings'](arg1);
+}
+
+export function SetCtx(arg1) {
+  return window['go']['bindings']['ConfigAPI']['SetCtx'](arg1);
 }

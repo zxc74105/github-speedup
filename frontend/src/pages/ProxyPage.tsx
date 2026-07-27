@@ -1,32 +1,53 @@
 import { useEffect, useState } from 'react'
-import { Button, Table, Tag, Input, Select, Space, message, Modal, Progress } from 'antd'
+import { App, Button, Table, Tag, Input, Space, Modal, Progress } from 'antd'
 import { ReloadOutlined, DeleteOutlined, DownloadOutlined, UploadOutlined, SearchOutlined } from '@ant-design/icons'
 import { useStore } from '../store/useStore'
 
 export default function ProxyPage() {
+  const { message } = App.useApp()
   const proxies = useStore((s) => s.proxies)
   const setProxies = useStore((s) => s.setProxies)
   const records = useStore((s) => s.records)
   const setRecords = useStore((s) => s.setRecords)
   const setSilentCount = useStore((s) => s.setSilentCount)
   const [search, setSearch] = useState('')
-  const [typeFilter, setTypeFilter] = useState('all')
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([])
   const [testing, setTesting] = useState(false)
 
+  const refreshRecords = async () => {
+    try {
+      const bindings = (window as any).go?.bindings
+      if (!bindings?.DownloadAPI) return
+      const records = await bindings.DownloadAPI.GetSuccessRecords()
+      setRecords(records)
+    } catch (e) { console.error(e) }
+  }
+
+  useEffect(() => {
+    refreshRecords()
+    const timer = setInterval(refreshRecords, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
   const filteredProxies = proxies.filter((p) => {
     if (search && !p.domain.includes(search)) return false
-    if (typeFilter !== 'all' && p.type !== typeFilter) return false
     return true
   })
+
+  const getAPI = (name: string) => {
+    const b = (window as any).go?.bindings
+    return b?.[name]
+  }
 
   const handleTestAll = async () => {
     setTesting(true)
     try {
-      const api = (window as any).go.bindings.ProxyAPI
+      const api = getAPI('ProxyAPI')
+      if (!api) return
       await api.TestAllProxies()
       const updated = await api.GetProxies()
       setProxies(updated)
+      refreshRecords()
       message.success('测速完成')
     } catch (e: any) {
       message.error('测速失败: ' + e.message)
@@ -36,7 +57,8 @@ export default function ProxyPage() {
 
   const handlePreflight = async () => {
     try {
-      const api = (window as any).go.bindings.ProxyAPI
+      const api = getAPI('ProxyAPI')
+      if (!api) return
       const result = await api.PreflightCheck()
       setSilentCount(result.silent)
       const updated = await api.GetProxies()
@@ -49,7 +71,8 @@ export default function ProxyPage() {
 
   const handleImport = async () => {
     try {
-      const api = (window as any).go.bindings.ProxyAPI
+      const api = getAPI('ProxyAPI')
+      if (!api) return
       const count = await api.ImportProxies('proxies.json')
       const updated = await api.GetProxies()
       setProxies(updated)
@@ -66,7 +89,8 @@ export default function ProxyPage() {
       content: `将删除 ${selectedRowKeys.length} 个代理及其成功记录`,
       onOk: async () => {
         try {
-          const api = (window as any).go.bindings.DownloadAPI
+          const api = getAPI('DownloadAPI')
+          if (!api) return
           await api.DeleteProxies(selectedRowKeys)
           message.success('已删除')
           setSelectedRowKeys([])
@@ -77,6 +101,15 @@ export default function ProxyPage() {
         }
       },
     })
+  }
+
+  const parseLatency = (v: string) => {
+    const m = v.match(/^[\d.]+/)
+    return m ? parseFloat(m[0]) : 999999
+  }
+  const parseSpeed = (v: string) => {
+    const m = v.match(/^[\d.]+/)
+    return m ? parseFloat(m[0]) : -1
   }
 
   const proxyColumns = [
@@ -97,9 +130,8 @@ export default function ProxyPage() {
         return <Tag color={colors[row.status]}>{texts[row.status] || row.status}</Tag>
       },
     },
-    { title: '延迟', dataIndex: 'latency', key: 'latency', width: 90, align: 'right' as const },
-    { title: '速度', dataIndex: 'speed', key: 'speed', width: 120, align: 'right' as const },
-    { title: '类型', dataIndex: 'type', key: 'type', width: 100, render: (v: string) => <Tag>{v}</Tag> },
+    { title: '延迟', dataIndex: 'latency', key: 'latency', width: 90, align: 'right' as const, sorter: (a: any, b: any) => parseLatency(a.latency) - parseLatency(b.latency) },
+    { title: '速度', dataIndex: 'speed', key: 'speed', width: 120, align: 'right' as const, sorter: (a: any, b: any) => parseSpeed(b.speed) - parseSpeed(a.speed) },
   ]
 
   const recordColumns = [
@@ -114,8 +146,8 @@ export default function ProxyPage() {
         </Space>
       ),
     },
-    { title: '总大小', dataIndex: 'totalBytes', key: 'totalBytes', width: 100, render: (v: number) => v ? (v / (1024 * 1024 * 1024)).toFixed(1) + ' GB' : '-' },
-    { title: '最近使用', dataIndex: 'lastUsedAt', key: 'lastUsedAt', width: 120, render: (v: string) => v ? new Date(v).toLocaleDateString() : '从未' },
+    { title: '总大小', dataIndex: 'totalBytes', key: 'totalBytes', width: 100, render: (v: number) => v ? (v / (1024 * 1024)).toFixed(1) + ' MB' : '-' },
+    { title: '最近使用', dataIndex: 'lastUsedAt', key: 'lastUsedAt', width: 150, render: (v: string) => v ? new Date(v).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '从未' },
   ]
 
   return (
@@ -124,16 +156,17 @@ export default function ProxyPage() {
         <Button type="primary" icon={<ReloadOutlined />} onClick={handleTestAll} loading={testing}>全部测速</Button>
         <Button icon={<ReloadOutlined />} onClick={handlePreflight}>代理预检</Button>
         <Button icon={<UploadOutlined />} onClick={handleImport}>导入</Button>
-        <Button icon={<DownloadOutlined />}>导出</Button>
+        <Button icon={<DownloadOutlined />} onClick={async () => {
+          try {
+            const api = getAPI('ProxyAPI')
+            if (!api) return
+            await api.ExportProxies('proxies-export.txt')
+            message.success('已导出到 proxies-export.txt')
+          } catch (e: any) { message.error('导出失败: ' + e.message) }
+        }}>导出</Button>
         <Button danger icon={<DeleteOutlined />} onClick={handleDelete}>删除选中</Button>
         <div style={{ flex: 1 }} />
         <Input prefix={<SearchOutlined />} placeholder="搜索域名" value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: 180 }} />
-        <Select value={typeFilter} onChange={setTypeFilter} style={{ width: 120 }}>
-          <Select.Option value="all">全部类型</Select.Option>
-          <Select.Option value="contribute">contribute</Select.Option>
-          <Select.Option value="search">search</Select.Option>
-          <Select.Option value="user">user</Select.Option>
-        </Select>
       </div>
 
       <Table

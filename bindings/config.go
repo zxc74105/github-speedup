@@ -1,11 +1,14 @@
 package bindings
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
 
 	"multi-proxy-downloader/core"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Settings struct {
@@ -28,7 +31,25 @@ type Settings struct {
 }
 
 type ConfigAPI struct {
+	ctx          context.Context
 	settingsPath string
+}
+
+func (c *ConfigAPI) SetCtx(ctx context.Context) {
+	c.ctx = ctx
+}
+
+func (c *ConfigAPI) PickDirectory() (string, error) {
+	if c.ctx == nil {
+		return "", nil
+	}
+	dir, err := runtime.OpenDirectoryDialog(c.ctx, runtime.OpenDialogOptions{
+		Title: "选择下载目录",
+	})
+	if err != nil {
+		return "", err
+	}
+	return dir, nil
 }
 
 func NewConfigAPI() *ConfigAPI {
@@ -55,9 +76,9 @@ func (c *ConfigAPI) getDefaults() Settings {
 		Theme:              "light",
 		Language:           "zh-CN",
 		CheckUpdate:        true,
-		EnableHTTPAPI:     false,
+		EnableHTTPAPI:     true,
 		HTTPAPIPort:       9090,
-		AllowRemoteAccess: false,
+		AllowRemoteAccess: true,
 	}
 }
 

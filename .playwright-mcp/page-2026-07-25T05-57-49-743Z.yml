@@ -1,0 +1,26 @@
+- generic [active] [ref=f2e1]:
+  - link "View source on Github":
+    - /url: https://github.com/cmliu/CF-Workers-GitHub
+  - generic [ref=f2e6]:
+    - heading "📦 GitHub 文件加速" [level=1] [ref=f2e7]:
+      - generic [ref=f2e8]: 📦
+      - text: GitHub 文件加速
+    - generic [ref=f2e9]:
+      - textbox "请输入 GitHub 文件链接" [ref=f2e10]
+      - button [ref=f2e11] [cursor=pointer]
+    - generic [ref=f2e14]:
+      - paragraph [ref=f2e15]:
+        - text: ✨ 支持带协议头(https://)或不带的GitHub链接，更多用法见
+        - link "文档说明" [ref=f2e16] [cursor=pointer]:
+          - /url: https://hunsh.net/archives/23/
+      - paragraph [ref=f2e17]: 🚀 release、archive使用cf加速，文件会跳转至JsDelivr
+      - paragraph [ref=f2e18]: ⚠️ 注意：暂不支持文件夹下载
+    - generic [ref=f2e19]:
+      - generic [ref=f2e20]: 📃 合法输入示例：
+      - paragraph [ref=f2e21]: 📄 分支源码：github.com/hunshcn/project/archive/master.zip
+      - paragraph [ref=f2e22]: 📁 release源码：github.com/hunshcn/project/archive/v0.1.0.tar.gz
+      - paragraph [ref=f2e23]: 📂 release文件：github.com/hunshcn/project/releases/download/v0.1.0/example.zip
+      - paragraph [ref=f2e24]: 💾 commit文件：github.com/hunshcn/project/blob/123/filename
+      - paragraph [ref=f2e25]: 🖨️ gist：gist.githubusercontent.com/cielpy/123/raw/cmd.py
+      - paragraph [ref=f2e26]: 📦 API：api.github.com/repos/cmliu/CF-Workers-GitHub/releases/latest
+  - button "Toggle theme" [ref=f2e27] [cursor=pointer]

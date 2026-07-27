@@ -1,0 +1,3 @@
+[   29320ms] [WARNING] Received a response with invalid MIME type "text/html" for the rule set requested from "http://127.0.0.1:9090/cdn-cgi/speculation" found in the Speculation-Rules header. @ http://127.0.0.1:9090/https:/github.com/aifuqiang02/ai-ssh-assistant/releases/download/v1.8.23/AI-SSH-Assistant-1.8.23-setup-x64.exe:0
+[   30174ms] Unexpected token '<'
+[   68203ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://127.0.0.1:9090/cdn-cgi/rum?:0

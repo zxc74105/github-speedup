@@ -1,0 +1,56 @@
+- generic [ref=f12e4]:
+  - complementary [ref=f12e5]:
+    - generic [ref=f12e6]:
+      - generic [ref=f12e7]: Multi-Proxy DL
+      - menu [ref=f12e9]:
+        - menuitem "download 下载管理" [ref=f12e10] [cursor=pointer]:
+          - img "download" [ref=f12e11]
+          - generic [ref=f12e14]: 下载管理
+        - menuitem "global 代理管理" [ref=f12e15] [cursor=pointer]:
+          - img "global" [ref=f12e16]
+          - generic [ref=f12e19]: 代理管理
+        - menuitem "setting 设置" [ref=f12e20] [cursor=pointer]:
+          - img "setting" [ref=f12e21]
+          - generic [ref=f12e24]: 设置
+  - main [ref=f12e25]:
+    - generic [ref=f12e26]:
+      - generic [ref=f12e27]:
+        - button "plus 新建任务" [ref=f12e28] [cursor=pointer]:
+          - img "plus" [ref=f12e30]
+          - generic [ref=f12e34]: 新建任务
+        - button "pause-circle 取消" [ref=f12e35] [cursor=pointer]:
+          - img "pause-circle" [ref=f12e37]
+          - generic [ref=f12e40]: 取消
+        - button "delete 删除选中" [ref=f12e41] [cursor=pointer]:
+          - img "delete" [ref=f12e43]
+          - generic [ref=f12e46]: 删除选中
+        - generic [ref=f12e47]:
+          - button "全 部" [ref=f12e48] [cursor=pointer]
+          - button "下载中" [ref=f12e50] [cursor=pointer]
+          - button "已完成" [ref=f12e52] [cursor=pointer]
+          - button "失 败" [ref=f12e54] [cursor=pointer]
+      - generic [ref=f12e60]:
+        - table [ref=f12e62]:
+          - rowgroup [ref=f12e71]:
+            - row [ref=f12e72]:
+              - columnheader [ref=f12e73]:
+                - generic [ref=f12e75]:
+                  - generic:
+                    - checkbox "Select all" [disabled]
+              - columnheader "文件名" [ref=f12e76]
+              - columnheader "大小" [ref=f12e77]
+              - columnheader "进度" [ref=f12e78]
+              - columnheader "速度" [ref=f12e79] [cursor=pointer]
+              - columnheader "剩余" [ref=f12e90]
+              - columnheader "状态" [ref=f12e91]
+        - table [ref=f12e93]:
+          - rowgroup [ref=f12e102]:
+            - generic [ref=f12e104]:
+              - generic:
+                - checkbox [disabled]
+            - generic [ref=f12e105]: 速度
+            - row [ref=f12e115]:
+              - cell "暂无数据 暂无数据" [ref=f12e116]:
+                - generic [ref=f12e117]:
+                  - img "暂无数据" [ref=f12e119]
+                  - generic [ref=f12e125]: 暂无数据

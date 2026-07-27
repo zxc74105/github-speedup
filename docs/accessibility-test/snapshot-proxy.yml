@@ -1,0 +1,69 @@
+- generic [ref=f2e3] [box=0,0,1280,720]:
+  - complementary [ref=f2e4] [box=0,0,180,720]:
+    - generic [ref=f2e5] [box=0,0,179,720]:
+      - generic [ref=f2e6] [box=0,0,179,48]: Multi-Proxy DL
+      - menu [ref=f2e8] [box=0,56,179,114]:
+        - menuitem "download 下载管理" [ref=f2e9] [cursor=pointer] [box=0,56,171,38]:
+          - img "download" [ref=f2e10] [box=24,68,14,14]
+          - generic [ref=f2e13] [box=48,56,107,38]: 下载管理
+        - menuitem "global 代理管理" [active] [ref=f2e14] [cursor=pointer] [box=0,94,171,38]:
+          - img "global" [ref=f2e15] [box=24,106,14,14]
+          - generic [ref=f2e18] [box=48,94,105,38]: 代理管理
+        - menuitem "setting 设置" [ref=f2e19] [cursor=pointer] [box=0,132,171,38]:
+          - img "setting" [ref=f2e20] [box=24,144,14,14]
+          - generic [ref=f2e23] [box=48,132,107,38]: 设置
+  - main [ref=f2e24] [box=180,0,1100,720]:
+    - generic [ref=f2e125] [box=180,0,1100,523]:
+      - generic [ref=f2e126] [box=200,20,1060,32]:
+        - button "reload 全部测速" [ref=f2e127] [cursor=pointer] [box=200,20,106,32]:
+          - img "reload" [ref=f2e129] [box=216,29,14,14]
+          - generic [ref=f2e132] [box=234,26,56,20]: 全部测速
+        - button "reload 代理预检" [ref=f2e133] [cursor=pointer] [box=314,20,106,32]:
+          - img "reload" [ref=f2e135] [box=330,29,14,14]
+          - generic [ref=f2e138] [box=348,26,56,20]: 代理预检
+        - button "upload 导入" [ref=f2e139] [cursor=pointer] [box=428,20,78,32]:
+          - img "upload" [ref=f2e141] [box=444,29,14,14]
+          - generic [ref=f2e144] [box=462,26,28,20]: 导入
+        - button "download 导出" [ref=f2e145] [cursor=pointer] [box=514,20,78,32]:
+          - img "download" [ref=f2e147] [box=530,29,14,14]
+          - generic [ref=f2e150] [box=548,26,28,20]: 导出
+        - button "delete 删除选中" [ref=f2e151] [cursor=pointer] [box=600,20,106,32]:
+          - img "delete" [ref=f2e153] [box=616,29,14,14]
+          - generic [ref=f2e156] [box=634,26,56,20]: 删除选中
+        - generic [ref=f2e158] [box=1080,20,180,32]:
+          - img "search" [ref=f2e160] [box=1092,29,14,14]
+          - textbox "搜索域名" [ref=f2e163] [box=1110,25,138,22]
+      - table [ref=f2e170] [box=200,68,1060,190]:
+        - rowgroup [ref=f2e177] [box=200,68,1060,39]:
+          - row [ref=f2e178] [box=200,68,1060,39]:
+            - columnheader [ref=f2e179] [box=200,68,32,39]:
+              - generic [ref=f2e181] [box=208,76,16,22]:
+                - generic [box=208,79,16,16]:
+                  - checkbox "Select all" [disabled] [box=208,79,16,16]
+            - columnheader "域名" [ref=f2e182] [box=232,68,718,39]
+            - columnheader "当前状态" [ref=f2e183] [box=950,68,100,39]
+            - columnheader "延迟" [ref=f2e184] [cursor=pointer] [box=1050,68,90,39]
+            - columnheader "速度" [ref=f2e195] [cursor=pointer] [box=1140,68,120,39]
+        - rowgroup [ref=f2e206] [box=200,107,1060,151]:
+          - row [ref=f2e207] [box=200,107,1060,151]:
+            - cell "暂无数据 暂无数据" [ref=f2e208] [box=200,107,1060,151]:
+              - generic [ref=f2e209] [box=216,147,1028,70]:
+                - img "暂无数据" [ref=f2e211] [box=698,147,64,40]
+                - generic [ref=f2e217] [box=216,195,1028,22]: 暂无数据
+      - generic [ref=f2e218] [box=200,282,1060,19]:
+        - generic [ref=f2e219] [box=200,282,99,19]: 🏆 成功代理记录
+        - generic [ref=f2e220] [box=307,284,187,16]: 按成功下载次数排序，使用越多越靠前
+      - table [ref=f2e227] [box=200,313,1060,190]:
+        - rowgroup [ref=f2e234] [box=200,313,1060,39]:
+          - row [ref=f2e235] [box=200,313,1060,39]:
+            - columnheader "排名" [ref=f2e236] [box=200,313,60,39]
+            - columnheader "域名" [ref=f2e237] [box=260,313,580,39]
+            - columnheader "成功次数" [ref=f2e238] [box=840,313,200,39]
+            - columnheader "总大小" [ref=f2e239] [box=1040,313,100,39]
+            - columnheader "最近使用" [ref=f2e240] [box=1140,313,120,39]
+        - rowgroup [ref=f2e241] [box=200,352,1060,151]:
+          - row [ref=f2e242] [box=200,352,1060,151]:
+            - cell "暂无数据 暂无数据" [ref=f2e243] [box=200,352,1060,151]:
+              - generic [ref=f2e244] [box=216,392,1028,70]:
+                - img "暂无数据" [ref=f2e246] [box=698,392,64,40]
+                - generic [ref=f2e252] [box=216,440,1028,22]: 暂无数据

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { ConfigProvider, Layout, Menu } from 'antd'
+import { App as AntApp, ConfigProvider, Layout, Menu } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { DownloadOutlined, GlobalOutlined, SettingOutlined, InboxOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { useStore } from './store/useStore'
@@ -16,13 +16,17 @@ function App() {
   const silentCount = useStore((s) => s.silentCount)
   const loadProxies = async () => {
     try {
-      const proxies = await (window as any).go.bindings.ProxyAPI.GetProxies()
+      const bindings = (window as any).go?.bindings
+      if (!bindings?.ProxyAPI) return
+      const proxies = await bindings.ProxyAPI.GetProxies()
       useStore.getState().setProxies(proxies)
     } catch (e) { console.error(e) }
   }
   const loadRecords = async () => {
     try {
-      const records = await (window as any).go.bindings.DownloadAPI.GetSuccessRecords()
+      const bindings = (window as any).go?.bindings
+      if (!bindings?.DownloadAPI) return
+      const records = await bindings.DownloadAPI.GetSuccessRecords()
       useStore.getState().setRecords(records)
     } catch (e) { console.error(e) }
   }
@@ -54,7 +58,7 @@ function App() {
         borderRadius: 6,
       },
     }}>
-      <Layout style={{ height: '100vh', background: '#f5f6f8' }}>
+      <AntApp><Layout style={{ height: '100vh', background: '#f5f6f8' }}>
         <Sider width={180} theme="light" style={{ borderRight: '1px solid #e0e0e0', background: '#f5f6f8' }}>
           <div style={{ padding: '14px 16px', fontWeight: 700, fontSize: 14, color: '#1a1a2e', borderBottom: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 16, height: 16, background: 'linear-gradient(135deg,#155DFC,#764ba2)', borderRadius: 4, display: 'inline-block' }} />
@@ -76,7 +80,7 @@ function App() {
         <Content style={{ overflow: 'auto', background: '#fff' }}>
           {renderPage()}
         </Content>
-      </Layout>
+      </Layout></AntApp>
     </ConfigProvider>
   )
 }

@@ -1,0 +1,53 @@
+- generic [ref=e5]:
+  - heading "IP数据查询" [level=1] [ref=e6]
+  - generic [ref=e7]:
+    - textbox "请输入IP地址" [ref=e8]: 111.202.248.208
+    - button "search 查询" [ref=e9] [cursor=pointer]:
+      - img "search" [ref=e11]
+      - generic [ref=e14]: 查询
+  - generic [ref=e15]:
+    - generic [ref=e16]: 本地IP信息
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]: "IP地址:"
+        - generic [ref=e23]: 111.202.248.208
+      - generic [ref=e24]:
+        - generic [ref=e25]: "国家:"
+        - generic [ref=e26]: China
+      - generic [ref=e27]:
+        - generic [ref=e28]: "地区:"
+        - generic [ref=e29]: Beijing
+      - generic [ref=e30]:
+        - generic [ref=e31]: "城市:"
+        - generic [ref=e32]: Beijing
+      - generic [ref=e33]: "邮编:"
+      - generic [ref=e35]:
+        - generic [ref=e36]: "ASN:"
+        - generic [ref=e37]: "4808"
+      - generic [ref=e38]:
+        - generic [ref=e39]: "组织:"
+        - generic [ref=e40]: 中国联通
+      - generic [ref=e41]: "数据中心:"
+      - generic [ref=e43]:
+        - generic [ref=e44]: "纬度:"
+        - generic [ref=e45]: "39.93888473510742"
+      - generic [ref=e46]:
+        - generic [ref=e47]: "经度:"
+        - generic [ref=e48]: "116.3974609375"
+  - generic [ref=e50]:
+    - generic [ref=e51]:
+      - button "arrow-up 增加高度" [ref=e52] [cursor=pointer]:
+        - img "arrow-up" [ref=e54]
+        - generic [ref=e57]: 增加高度
+      - button "arrow-down 去除高度" [ref=e58] [cursor=pointer]:
+        - img "arrow-down" [ref=e60]
+        - generic [ref=e63]: 去除高度
+    - generic [ref=e67]:
+      - generic [ref=e69]:
+        - generic:
+          - generic [ref=e70]: 50 米
+          - generic [ref=e75]: 200 英尺
+      - generic [ref=e81]:
+        - link [ref=e82] [cursor=pointer]:
+          - /url: http://map.qq.com?ref=jsapi_v3
+        - generic [ref=e84]: ©2026 Tencent - GS(2026)1190号

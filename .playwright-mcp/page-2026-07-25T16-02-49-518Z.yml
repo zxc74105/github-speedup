@@ -1,0 +1,7 @@
+- generic [ref=f40e5]:
+  - heading "IP数据查询" [level=1] [ref=f40e6]
+  - generic [ref=f40e7]:
+    - textbox "请输入IP地址" [ref=f40e8]
+    - button "loading 查询" [ref=f40e9]:
+      - img "loading" [ref=f40e11]
+      - generic [ref=f40e14]: 查询

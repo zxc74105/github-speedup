@@ -3,12 +3,20 @@
 import {bindings} from '../models';
 import {context} from '../models';
 
+export function CancelTask(arg1:number):Promise<void>;
+
 export function CreateTask(arg1:bindings.CreateTaskReq):Promise<bindings.TaskInfo>;
 
 export function DeleteProxies(arg1:Array<string>):Promise<void>;
 
+export function DeleteTask(arg1:number):Promise<void>;
+
 export function GetSuccessRecords():Promise<Array<bindings.ProxyRecord>>;
 
 export function GetTasks():Promise<Array<bindings.TaskInfo>>;
+
+export function RecordProxyFailure(arg1:string):Promise<void>;
+
+export function RecordProxySuccess(arg1:string,arg2:number,arg3:number):Promise<void>;
 
 export function SetCtx(arg1:context.Context):Promise<void>;

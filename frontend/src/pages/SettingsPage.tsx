@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Form, Input, InputNumber, Select, Switch, Radio, Space, message, Modal, Tag } from 'antd'
+import { App, Button, Card, Form, Input, InputNumber, Select, Switch, Radio, Space, Modal, Tag } from 'antd'
 import { useStore, Settings } from '../store/useStore'
 
 export default function SettingsPage() {
+  const { message } = App.useApp()
   const settings = useStore((s) => s.settings)
   const setSettings = useStore((s) => s.setSettings)
   const setRecords = useStore((s) => s.setRecords)
@@ -10,9 +11,15 @@ export default function SettingsPage() {
   const [serverRunning, setServerRunning] = useState(false)
   const [serverAddr, setServerAddr] = useState('')
 
+  const getAPI = (name: string) => {
+    const b = (window as any).go?.bindings
+    return b?.[name]
+  }
+
   const refreshServerStatus = async () => {
     try {
-      const api = (window as any).go.bindings.ServerAPI
+      const api = getAPI('ServerAPI')
+      if (!api) return
       const running = await api.IsRunning()
       setServerRunning(running)
       if (running) {
@@ -25,7 +32,8 @@ export default function SettingsPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const api = (window as any).go.bindings.ConfigAPI
+        const api = getAPI('ConfigAPI')
+        if (!api) return
         const s = await api.GetSettings()
         setSettings(s)
         form.setFieldsValue(s)
@@ -38,19 +46,16 @@ export default function SettingsPage() {
   const handleSave = async () => {
     try {
       const values = form.getFieldsValue()
-      const api = (window as any).go.bindings.ConfigAPI
+      const api = getAPI('ConfigAPI')
+      const serverAPI = getAPI('ServerAPI')
+      if (!api || !serverAPI) return
 
-      // Start or stop HTTP server based on setting change
-      const wasRunning = settings?.enableHTTPAPI
-      const serverAPI = (window as any).go.bindings.ServerAPI
-      if (values.enableHTTPAPI && !wasRunning) {
-        await serverAPI.Start(values.httpAPIPort, values.allowRemoteAccess)
-      } else if (!values.enableHTTPAPI && wasRunning) {
+      const wasRunning = await serverAPI.IsRunning()
+      if (wasRunning && values.httpAPIPort !== settings?.httpAPIPort) {
         await serverAPI.Stop()
-      } else if (values.enableHTTPAPI && wasRunning &&
-                 (values.httpAPIPort !== settings?.httpAPIPort || values.allowRemoteAccess !== settings?.allowRemoteAccess)) {
-        await serverAPI.Stop()
-        await serverAPI.Start(values.httpAPIPort, values.allowRemoteAccess)
+        await serverAPI.Start(values.httpAPIPort, true)
+      } else if (!wasRunning) {
+        await serverAPI.Start(values.httpAPIPort, true)
       }
 
       await api.SaveSettings(values)
@@ -66,7 +71,8 @@ export default function SettingsPage() {
     Modal.confirm({
       title: '恢复默认设置？',
       onOk: async () => {
-        const api = (window as any).go.bindings.ConfigAPI
+        const api = getAPI('ConfigAPI')
+        if (!api) return
         const def = await api.ResetSettings()
         setSettings(def)
         form.setFieldsValue(def)
@@ -82,7 +88,8 @@ export default function SettingsPage() {
       okText: '确认清除',
       okType: 'danger',
       onOk: async () => {
-        const api = (window as any).go.bindings.ConfigAPI
+        const api = getAPI('ConfigAPI')
+        if (!api) return
         await api.ClearRecords()
         setRecords([])
         message.success('已清除记录')
@@ -92,7 +99,8 @@ export default function SettingsPage() {
 
   const handleExport = async () => {
     try {
-      const api = (window as any).go.bindings.ConfigAPI
+      const api = getAPI('ConfigAPI')
+      if (!api) return
       const path = await api.ExportRecords()
       message.success('已导出到: ' + path)
     } catch (e: any) {
@@ -106,9 +114,22 @@ export default function SettingsPage() {
 
       <Form form={form} layout="vertical" initialValues={settings || {}}>
         <Card title="⬇️ 下载设置" style={{ marginBottom: 16 }}>
-          <Form.Item name="defaultSaveDir" label="默认下载文件夹">
-            <Input placeholder="D:\Downloads" />
-          </Form.Item>
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 4, fontSize: 13, color: '#333' }}>默认下载文件夹</div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <Form.Item name="defaultSaveDir" style={{ marginBottom: 0, flex: 1 }}>
+                <Input placeholder="D:\Downloads" />
+              </Form.Item>
+              <Button onClick={async () => {
+                try {
+                  const api = getAPI('ConfigAPI')
+                  if (!api) return
+                  const dir = await api.PickDirectory()
+                  if (dir) form.setFieldsValue({ defaultSaveDir: dir })
+                } catch (e) { console.error('浏览目录失败:', e); message.warning('请手动输入路径') }
+              }}>浏览</Button>
+            </div>
+          </div>
           <Form.Item name="defaultConcurrency" label="默认并发数">
             <InputNumber min={1} max={50} style={{ width: 120 }} />
           </Form.Item>
@@ -182,14 +203,14 @@ export default function SettingsPage() {
         </Card>
 
         <Card title="🔌 HTTP API 加速服务" style={{ marginBottom: 16 }}>
-          <Form.Item name="enableHTTPAPI" label="启用 HTTP API" valuePropName="checked">
-            <Switch />
-          </Form.Item>
+          <div style={{ marginBottom: 12, padding: '6px 10px', background: '#e8f5e9', borderRadius: 4, fontSize: 12, color: '#2e7d32' }}>
+            ⚡ 此功能永久开启，无需配置
+          </div>
           <Form.Item name="httpAPIPort" label="监听端口">
-            <InputNumber min={1024} max={65535} style={{ width: 120 }} />
+            <InputNumber min={1024} max={65535} style={{ width: 120 }} disabled />
           </Form.Item>
           <Form.Item name="allowRemoteAccess" label="允许远程访问" valuePropName="checked">
-            <Switch />
+            <Switch checked disabled />
           </Form.Item>
           <div style={{ padding: '8px 12px', background: '#f5f5f5', borderRadius: 6, fontSize: 12, color: '#666' }}>
             <div style={{ marginBottom: 4 }}>

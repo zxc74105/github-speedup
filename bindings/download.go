@@ -21,6 +21,7 @@ type DownloadAPI struct {
 	nextID       int
 	successRecs  []ProxyRecord
 	recordsPath  string
+	tasksPath    string
 }
 
 type TaskInfo struct {
@@ -71,8 +72,10 @@ func NewDownloadAPI(ctx context.Context) *DownloadAPI {
 		ctx:         ctx,
 		nextID:      1,
 		recordsPath: recordsPath,
+		tasksPath:   filepath.Join(dir, "tasks.json"),
 	}
 	api.loadRecords()
+	api.loadTasks()
 	return api
 }
 
@@ -88,6 +91,36 @@ func (d *DownloadAPI) loadRecords() {
 func (d *DownloadAPI) saveRecords() {
 	data, _ := json.MarshalIndent(d.successRecs, "", "  ")
 	os.WriteFile(d.recordsPath, data, 0644)
+}
+
+func (d *DownloadAPI) loadTasks() {
+	data, err := os.ReadFile(d.tasksPath)
+	if err != nil {
+		d.tasks = []*TaskInfo{}
+		return
+	}
+	var tasks []*TaskInfo
+	if json.Unmarshal(data, &tasks) == nil {
+		d.tasks = tasks
+		for _, t := range tasks {
+			if t.ID >= d.nextID {
+				d.nextID = t.ID + 1
+			}
+		}
+		// Mark all as paused on restart (lost download context)
+		for _, t := range d.tasks {
+			if t.Status == "downloading" || t.Status == "preparing" {
+				t.Status = "paused"
+			}
+		}
+	}
+}
+
+func (d *DownloadAPI) saveTasks() {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	data, _ := json.MarshalIndent(d.tasks, "", "  ")
+	os.WriteFile(d.tasksPath, data, 0644)
 }
 
 func (d *DownloadAPI) CreateTask(req CreateTaskReq) (*TaskInfo, error) {
@@ -117,75 +150,12 @@ func (d *DownloadAPI) CreateTask(req CreateTaskReq) (*TaskInfo, error) {
 		Timeout:       req.Timeout,
 	}
 
-	onProgress := func(p core.ProgressData) {
-		runtime.EventsEmit(d.ctx, "download:progress", p)
-	}
-
-	recordSuccess := func(domain string, bytes int64, speed float64) {
-		d.mu.Lock()
-		defer d.mu.Unlock()
-		found := false
-		for i, rec := range d.successRecs {
-			if rec.Domain == domain {
-				d.successRecs[i].SuccessCount++
-				d.successRecs[i].TotalBytes += bytes
-				d.successRecs[i].LastUsedAt = time.Now()
-				// Rolling average
-				totalSpeed := rec.AverageSpeed * float64(rec.SuccessCount-1) + speed
-				d.successRecs[i].AverageSpeed = totalSpeed / float64(rec.SuccessCount)
-				d.successRecs[i].SpeedHistory = append(d.successRecs[i].SpeedHistory, speed)
-				if len(d.successRecs[i].SpeedHistory) > 100 {
-					d.successRecs[i].SpeedHistory = d.successRecs[i].SpeedHistory[1:]
-				}
-				found = true
-				break
-			}
-		}
-		if !found {
-			d.successRecs = append(d.successRecs, ProxyRecord{
-				Domain:       domain,
-				SuccessCount: 1,
-				TotalBytes:   bytes,
-				AverageSpeed: speed,
-				FirstUsedAt:  time.Now(),
-				LastUsedAt:   time.Now(),
-				SpeedHistory: []float64{speed},
-			})
-		}
-		d.saveRecords()
-	}
-
-	recordFailure := func(domain string) {
-		d.mu.Lock()
-		defer d.mu.Unlock()
-		for i, rec := range d.successRecs {
-			if rec.Domain == domain {
-				d.successRecs[i].FailCount++
-				break
-			}
-		}
-		d.saveRecords()
-	}
-
-	result, err := core.StartBackgroundDownload(task, recordSuccess, recordFailure, onProgress)
-	if err != nil {
-		return nil, err
-	}
-
 	info := &TaskInfo{
-		ID:         d.nextID,
-		URL:        result.URL,
-		FileName:   result.FileName,
-		SaveDir:    result.SaveDir,
-		TotalBytes: result.TotalBytes,
-		Downloaded: result.Downloaded,
-		Speed:      result.Speed,
-		ETA:        result.ETA,
-		Status:     result.Status,
-		CreatedAt:  result.CreatedAt,
-	}
-	if result.TotalBytes > 0 {
-		info.Progress = float64(result.Downloaded) / float64(result.TotalBytes) * 100
+		ID:        d.nextID,
+		URL:       req.URL,
+		SaveDir:   req.SaveDir,
+		Status:    "preparing",
+		CreatedAt: time.Now(),
 	}
 
 	d.mu.Lock()
@@ -193,6 +163,95 @@ func (d *DownloadAPI) CreateTask(req CreateTaskReq) (*TaskInfo, error) {
 	d.nextID++
 	d.tasks = append(d.tasks, info)
 	d.mu.Unlock()
+	d.saveTasks()
+
+	go func(t *core.DownloadTask, taskInfo *TaskInfo) {
+		onProgress := func(p core.ProgressData) {
+			p.TaskID = taskInfo.ID
+			runtime.EventsEmit(d.ctx, "download:progress", p)
+		}
+
+		recordSuccess := func(domain string, bytes int64, speed float64) {
+			d.mu.Lock()
+			defer d.mu.Unlock()
+			found := false
+			for i, rec := range d.successRecs {
+				if rec.Domain == domain {
+					d.successRecs[i].SuccessCount++
+					d.successRecs[i].TotalBytes += bytes
+					d.successRecs[i].LastUsedAt = time.Now()
+					totalSpeed := rec.AverageSpeed * float64(rec.SuccessCount-1) + speed
+					d.successRecs[i].AverageSpeed = totalSpeed / float64(rec.SuccessCount)
+					d.successRecs[i].SpeedHistory = append(d.successRecs[i].SpeedHistory, speed)
+					if len(d.successRecs[i].SpeedHistory) > 100 {
+						d.successRecs[i].SpeedHistory = d.successRecs[i].SpeedHistory[1:]
+					}
+					found = true
+					break
+				}
+			}
+			if !found {
+				d.successRecs = append(d.successRecs, ProxyRecord{
+					Domain:       domain,
+					SuccessCount: 1,
+					TotalBytes:   bytes,
+					AverageSpeed: speed,
+					FirstUsedAt:  time.Now(),
+					LastUsedAt:   time.Now(),
+					SpeedHistory: []float64{speed},
+				})
+			}
+			d.saveRecords()
+		}
+
+		recordFailure := func(domain string) {
+			d.mu.Lock()
+			defer d.mu.Unlock()
+			for i, rec := range d.successRecs {
+				if rec.Domain == domain {
+					d.successRecs[i].FailCount++
+					break
+				}
+			}
+			d.saveRecords()
+		}
+
+		d.mu.Lock()
+		taskInfo.Status = "downloading"
+		d.mu.Unlock()
+		d.saveTasks()
+		runtime.EventsEmit(d.ctx, "download:progress", core.ProgressData{
+			TaskID:     taskInfo.ID,
+			Downloaded: 0,
+		})
+
+		result, err := core.StartBackgroundDownload(t, recordSuccess, recordFailure, onProgress)
+		d.mu.Lock()
+		if err != nil {
+			taskInfo.Status = "failed"
+			taskInfo.URL = t.URL
+			d.mu.Unlock()
+			d.saveTasks()
+			return
+		}
+		taskInfo.FileName = result.FileName
+		taskInfo.TotalBytes = result.TotalBytes
+		taskInfo.Downloaded = result.Downloaded
+		taskInfo.Speed = result.Speed
+		taskInfo.ETA = result.ETA
+		taskInfo.Status = result.Status
+		taskInfo.URL = result.URL
+		if result.TotalBytes > 0 {
+			taskInfo.Progress = float64(result.Downloaded) / float64(result.TotalBytes) * 100
+		}
+		d.mu.Unlock()
+		d.saveTasks()
+
+		onProgress(core.ProgressData{
+			Downloaded: result.Downloaded,
+			TotalBytes: result.TotalBytes,
+		})
+	}(task, info)
 
 	return info, nil
 }
@@ -215,6 +274,79 @@ func (d *DownloadAPI) GetSuccessRecords() []ProxyRecord {
 		return sorted[i].AverageSpeed > sorted[j].AverageSpeed
 	})
 	return sorted
+}
+
+func (d *DownloadAPI) RecordProxySuccess(domain string, bytes int64, speed float64) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	found := false
+	for i, rec := range d.successRecs {
+		if rec.Domain == domain {
+			d.successRecs[i].SuccessCount++
+			d.successRecs[i].TotalBytes += bytes
+			d.successRecs[i].LastUsedAt = time.Now()
+			totalSpeed := rec.AverageSpeed * float64(rec.SuccessCount-1) + speed
+			d.successRecs[i].AverageSpeed = totalSpeed / float64(rec.SuccessCount)
+			d.successRecs[i].SpeedHistory = append(d.successRecs[i].SpeedHistory, speed)
+			if len(d.successRecs[i].SpeedHistory) > 100 {
+				d.successRecs[i].SpeedHistory = d.successRecs[i].SpeedHistory[1:]
+			}
+			found = true
+			break
+		}
+	}
+	if !found {
+		d.successRecs = append(d.successRecs, ProxyRecord{
+			Domain:       domain,
+			SuccessCount: 1,
+			TotalBytes:   bytes,
+			AverageSpeed: speed,
+			FirstUsedAt:  time.Now(),
+			LastUsedAt:   time.Now(),
+			SpeedHistory: []float64{speed},
+		})
+	}
+	d.saveRecords()
+}
+
+func (d *DownloadAPI) RecordProxyFailure(domain string) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	for i, rec := range d.successRecs {
+		if rec.Domain == domain {
+			d.successRecs[i].FailCount++
+			break
+		}
+	}
+	d.saveRecords()
+}
+
+func (d *DownloadAPI) CancelTask(id int) error {
+	core.CancelDownload(id)
+	d.mu.Lock()
+	for i, t := range d.tasks {
+		if t.ID == id {
+			d.tasks = append(d.tasks[:i], d.tasks[i+1:]...)
+			break
+		}
+	}
+	d.mu.Unlock()
+	d.saveTasks()
+	return nil
+}
+
+func (d *DownloadAPI) DeleteTask(id int) error {
+	d.mu.Lock()
+	for i, t := range d.tasks {
+		if t.ID == id {
+			os.RemoveAll(filepath.Join(t.SaveDir, t.FileName))
+			d.tasks = append(d.tasks[:i], d.tasks[i+1:]...)
+			break
+		}
+	}
+	d.mu.Unlock()
+	d.saveTasks()
+	return nil
 }
 
 func (d *DownloadAPI) DeleteProxies(domains []string) error {

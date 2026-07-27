@@ -20,7 +20,6 @@ export interface ProxyItem {
   status: string
   latency: string
   speed: string
-  type: string
 }
 
 export interface ProxyRecord {

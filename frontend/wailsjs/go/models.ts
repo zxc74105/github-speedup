@@ -42,11 +42,11 @@ export namespace bindings {
 	}
 	export class ProxyItem {
 	    domain: string;
+	    scheme: string;
 	    enabled: boolean;
 	    status: string;
 	    latency: string;
 	    speed: string;
-	    type: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new ProxyItem(source);
@@ -55,11 +55,11 @@ export namespace bindings {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.domain = source["domain"];
+	        this.scheme = source["scheme"];
 	        this.enabled = source["enabled"];
 	        this.status = source["status"];
 	        this.latency = source["latency"];
 	        this.speed = source["speed"];
-	        this.type = source["type"];
 	    }
 	}
 	export class ProxyRecord {
@@ -110,6 +110,7 @@ export namespace bindings {
 	}
 	export class ProxyTestResult {
 	    domain: string;
+	    scheme: string;
 	    latency: string;
 	    speed: string;
 	    status: string;
@@ -121,6 +122,7 @@ export namespace bindings {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.domain = source["domain"];
+	        this.scheme = source["scheme"];
 	        this.latency = source["latency"];
 	        this.speed = source["speed"];
 	        this.status = source["status"];

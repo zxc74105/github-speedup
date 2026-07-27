@@ -1,0 +1,56 @@
+- generic [ref=f11e4] [box=0,0,1280,720]:
+  - complementary [ref=f11e5] [box=0,0,180,720]:
+    - generic [ref=f11e6] [box=0,0,179,720]:
+      - generic [ref=f11e7] [box=0,0,179,51]: Multi-Proxy DL
+      - menu [ref=f11e9] [box=0,59,179,114]:
+        - menuitem "download 下载管理" [ref=f11e10] [cursor=pointer] [box=0,59,171,38]:
+          - img "download" [ref=f11e11] [box=24,71,14,14]
+          - generic [ref=f11e14] [box=48,59,105,38]: 下载管理
+        - menuitem "global 代理管理" [ref=f11e15] [cursor=pointer] [box=0,97,171,38]:
+          - img "global" [ref=f11e16] [box=24,109,14,14]
+          - generic [ref=f11e19] [box=48,97,107,38]: 代理管理
+        - menuitem "setting 设置" [ref=f11e20] [cursor=pointer] [box=0,135,171,38]:
+          - img "setting" [ref=f11e21] [box=24,147,14,14]
+          - generic [ref=f11e24] [box=48,135,107,38]: 设置
+  - main [ref=f11e25] [box=180,0,1100,720]:
+    - generic [ref=f11e26] [box=180,0,1100,720]:
+      - generic [ref=f11e27] [box=180,0,1100,57]:
+        - button "plus 新建任务" [ref=f11e28] [cursor=pointer] [box=200,12,106,32]:
+          - img "plus" [ref=f11e30] [box=216,21,14,14]
+          - generic [ref=f11e34] [box=234,18,56,20]: 新建任务
+        - button "pause-circle 取消" [ref=f11e35] [cursor=pointer] [box=314,12,78,32]:
+          - img "pause-circle" [ref=f11e37] [box=330,21,14,14]
+          - generic [ref=f11e40] [box=348,18,28,20]: 取消
+        - button "delete 删除选中" [ref=f11e41] [cursor=pointer] [box=400,12,106,32]:
+          - img "delete" [ref=f11e43] [box=416,21,14,14]
+          - generic [ref=f11e46] [box=434,18,56,20]: 删除选中
+        - generic [ref=f11e47] [box=1051,16,209,24]:
+          - button "全 部" [ref=f11e48] [cursor=pointer] [box=1051,16,48,24]
+          - button "下载中" [ref=f11e50] [cursor=pointer] [box=1098,16,58,24]
+          - button "已完成" [ref=f11e52] [cursor=pointer] [box=1155,16,58,24]
+          - button "失 败" [ref=f11e54] [cursor=pointer] [box=1212,16,48,24]
+      - generic [ref=f11e60] [box=180,57,1100,190]:
+        - table [ref=f11e62] [box=180,57,1100,39]:
+          - rowgroup [ref=f11e71] [box=180,57,1100,39]:
+            - row [ref=f11e72] [box=180,57,1100,39]:
+              - columnheader [ref=f11e73] [box=180,57,32,39]:
+                - generic [ref=f11e75] [box=188,65,16,22]:
+                  - generic [box=188,68,16,16]:
+                    - checkbox "Select all" [disabled] [box=188,68,16,16]
+              - columnheader "文件名" [ref=f11e76] [box=212,57,498,39]
+              - columnheader "大小" [ref=f11e77] [box=710,57,100,39]
+              - columnheader "进度" [ref=f11e78] [box=810,57,180,39]
+              - columnheader "速度" [ref=f11e79] [cursor=pointer] [box=990,57,110,39]
+              - columnheader "剩余" [ref=f11e90] [box=1100,57,80,39]
+              - columnheader "状态" [ref=f11e91] [box=1180,57,100,39]
+        - table [ref=f11e93] [box=180,96,1100,151]:
+          - rowgroup [ref=f11e102] [box=180,96,1100,151]:
+            - generic [ref=f11e104] [box=188,96,16,22]:
+              - generic [box=188,99,16,16]:
+                - checkbox [disabled] [box=188,99,16,16]
+            - generic [ref=f11e105] [box=998,96,94,22]: 速度
+            - row [ref=f11e115] [box=180,96,1100,151]:
+              - cell "暂无数据 暂无数据" [ref=f11e116] [box=180,96,1100,151]:
+                - generic [ref=f11e117] [box=196,136,1068,70]:
+                  - img "暂无数据" [ref=f11e119] [box=698,136,64,40]
+                  - generic [ref=f11e125] [box=196,184,1068,22]: 暂无数据

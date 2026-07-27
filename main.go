@@ -21,7 +21,7 @@ func main() {
 	downloadAPI := bindings.NewDownloadAPI(context.Background())
 	proxyAPI := bindings.NewProxyAPI(context.Background())
 	configAPI := bindings.NewConfigAPI()
-	httpService := bindings.NewHTTPService(proxyAPI)
+	httpService := bindings.NewHTTPService(proxyAPI, downloadAPI)
 	serverAPI := bindings.NewServerAPI(httpService)
 
 	app := &App{}
@@ -37,12 +37,14 @@ func main() {
 		},
 		BackgroundColour: &options.RGBA{R: 245, G: 246, B: 248, A: 1},
 		OnStartup: func(ctx context.Context) {
+			bindings.InitLogger()
 			app.ctx = ctx
 			app.Download = downloadAPI
 			app.Proxy = proxyAPI
 			app.Config = configAPI
 			downloadAPI.SetCtx(ctx)
 			proxyAPI.SetCtx(ctx)
+			configAPI.SetCtx(ctx)
 
 			// Auto-start HTTP API if enabled in settings
 			settings := configAPI.GetSettings()

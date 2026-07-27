@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Button, Table, Progress, Tag, Tabs, Descriptions, Modal, Input, InputNumber, message, Space } from 'antd'
-import { PlusOutlined, PauseCircleOutlined, CloseCircleOutlined, FolderOpenOutlined, DownloadOutlined } from '@ant-design/icons'
+import { App, Button, Table, Progress, Tag, Tabs, Descriptions, Modal, Input, InputNumber, Space } from 'antd'
+import { PlusOutlined, PauseCircleOutlined, CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useStore } from '../store/useStore'
 
 export default function DownloadPage() {
+  const { message } = App.useApp()
   const tasks = useStore((s) => s.tasks)
   const addTask = useStore((s) => s.addTask)
+  const setTasks = useStore((s) => s.setTasks)
   const selectedTaskId = useStore((s) => s.selectedTaskId)
   const setSelectedTaskId = useStore((s) => s.setSelectedTaskId)
   const settings = useStore((s) => s.settings)
@@ -13,6 +15,8 @@ export default function DownloadPage() {
   const [url, setUrl] = useState('')
   const [concurrency, setConcurrency] = useState(settings?.defaultConcurrency || 20)
   const [filter, setFilter] = useState('all')
+  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([])
+  const [creating, setCreating] = useState(false)
 
   const filteredTasks = tasks.filter((t) => {
     if (filter === 'all') return true
@@ -28,13 +32,43 @@ export default function DownloadPage() {
     setConcurrency(settings?.defaultConcurrency || 20)
   }, [settings?.defaultConcurrency])
 
+  const getAPI = (name: string) => {
+    const b = (window as any).go?.bindings
+    return b?.[name]
+  }
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const api = getAPI('DownloadAPI')
+        if (!api) return
+        const existing = await api.GetTasks()
+        setTasks(existing)
+      } catch (e) { console.error(e) }
+    }
+    load()
+  }, [])
+
   useEffect(() => {
     const setupEvents = async () => {
       try {
         const wailsRuntime = (window as any).runtime
         if (wailsRuntime?.EventsOn) {
           wailsRuntime.EventsOn('download:progress', (data: any) => {
-            // progress updates from backend
+            useStore.setState((s: any) => ({
+              tasks: s.tasks.map((t: any) =>
+                t.id === data.TaskID
+                  ? {
+                      ...t,
+                      downloaded: data.Downloaded ?? t.downloaded,
+                      totalBytes: data.TotalBytes ?? t.totalBytes,
+                      speed: data.Speed ?? t.speed,
+                      status: data.Status || 'downloading',
+                      progress: (data.TotalBytes && data.TotalBytes > 0) ? (data.Downloaded / data.TotalBytes) * 100 : t.progress || 0
+                    }
+                  : t
+              )
+            }))
           })
         }
       } catch (e) { /* ignore */ }
@@ -42,10 +76,52 @@ export default function DownloadPage() {
     setupEvents()
   }, [])
 
+  const handleCancelTask = async (id: number) => {
+    try {
+      const api = getAPI('DownloadAPI')
+      if (!api) return
+      await api.CancelTask(id)
+      useStore.setState((s: any) => ({ tasks: s.tasks.filter((t: any) => t.id !== id) }))
+      if (selectedTaskId === id) setSelectedTaskId(null)
+      message.success('已取消')
+    } catch (e: any) { message.error('取消失败: ' + e.message) }
+  }
+
+  const handleDeleteTask = async (id: number) => {
+    try {
+      const api = getAPI('DownloadAPI')
+      if (!api) return
+      await api.DeleteTask(id)
+      useStore.setState((s: any) => ({ tasks: s.tasks.filter((t: any) => t.id !== id) }))
+      if (selectedTaskId === id) setSelectedTaskId(null)
+      message.success('已删除')
+    } catch (e: any) { message.error('删除失败: ' + e.message) }
+  }
+
+  const handleDeleteSelected = async () => {
+    if (selectedRowKeys.length === 0) { message.warning('请选择要删除的任务'); return }
+    Modal.confirm({
+      title: '删除选中任务？',
+      content: `将删除 ${selectedRowKeys.length} 个任务`,
+      onOk: async () => {
+        const api = getAPI('DownloadAPI')
+        if (!api) return
+        for (const id of selectedRowKeys) {
+          await api.DeleteTask(id)
+        }
+        useStore.setState((s: any) => ({ tasks: s.tasks.filter((t: any) => !selectedRowKeys.includes(t.id)) }))
+        setSelectedRowKeys([])
+        message.success('已删除')
+      },
+    })
+  }
+
   const handleCreateTask = async () => {
     if (!url) { message.error('请输入下载链接'); return }
+    setCreating(true)
     try {
-      const api = (window as any).go.bindings.DownloadAPI
+      const api = getAPI('DownloadAPI')
+      if (!api) return
       const task = await api.CreateTask({
         url,
         saveDir: settings?.defaultSaveDir || '',
@@ -60,6 +136,8 @@ export default function DownloadPage() {
       message.success('任务已创建')
     } catch (e: any) {
       message.error('创建任务失败: ' + e.message)
+    } finally {
+      setCreating(false)
     }
   }
 
@@ -114,7 +192,7 @@ export default function DownloadPage() {
         </div>
       ),
     },
-    { title: '速度', dataIndex: 'speed', key: 'speed', width: 110, render: (v: number) => <span style={{ fontFamily: 'monospace', color: '#155DFC' }}>{formatSpeed(v)}</span>, align: 'right' as const },
+    { title: '速度', dataIndex: 'speed', key: 'speed', width: 110, sorter: (a: any, b: any) => b.speed - a.speed, render: (v: number) => <span style={{ fontFamily: 'monospace', color: '#155DFC' }}>{formatSpeed(v)}</span>, align: 'right' as const },
     { title: '剩余', dataIndex: 'eta', key: 'eta', width: 80, render: (v: string) => v || '-', align: 'right' as const },
     {
       title: '状态', dataIndex: 'status', key: 'status', width: 100,
@@ -126,16 +204,19 @@ export default function DownloadPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ padding: '12px 20px', borderBottom: '1px solid #f0f0f0', display: 'flex', gap: 8, alignItems: 'center', background: '#fafbfc' }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>新建任务</Button>
-        <Button icon={<PauseCircleOutlined />}>暂停</Button>
-        <Button icon={<CloseCircleOutlined />}>取消</Button>
+        <Button icon={<PauseCircleOutlined />} onClick={() => {
+          if (!selectedTaskId) { message.warning('请先选择一个任务'); return }
+          handleCancelTask(selectedTaskId)
+        }}>取消</Button>
+        <Button icon={<DeleteOutlined />} onClick={handleDeleteSelected}>删除选中</Button>
         <div style={{ flex: 1 }} />
-        <Button.Group>
+        <Space.Compact>
           {['all', 'downloading', 'completed', 'failed'].map((f) => (
             <Button key={f} type={filter === f ? 'primary' : 'default'} size="small" onClick={() => setFilter(f)}>
               {{ all: '全部', downloading: '下载中', completed: '已完成', failed: '失败' }[f]}
             </Button>
           ))}
-        </Button.Group>
+        </Space.Compact>
       </div>
 
       <Table
@@ -144,6 +225,7 @@ export default function DownloadPage() {
         rowKey="id"
         pagination={false}
         size="small"
+        rowSelection={{ selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys as number[]) }}
         onRow={(record) => ({
           onClick: () => setSelectedTaskId(record.id),
           style: { cursor: 'pointer', background: record.id === selectedTaskId ? '#f0f4ff' : undefined },
@@ -175,8 +257,8 @@ export default function DownloadPage() {
         </div>
       )}
 
-      <Modal title="新建下载任务" open={modalOpen} onOk={handleCreateTask} onCancel={() => setModalOpen(false)} okText="开始下载" cancelText="取消">
-        <Space direction="vertical" style={{ width: '100%' }}>
+      <Modal title="新建下载任务" open={modalOpen} onOk={handleCreateTask} onCancel={() => setModalOpen(false)} okText="开始下载" cancelText="取消" okButtonProps={{ disabled: !url.trim(), loading: creating }}>
+        <Space orientation="vertical" style={{ width: '100%' }}>
           <div>
             <div style={{ marginBottom: 4, fontSize: 12, color: '#666' }}>下载链接</div>
             <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://github.com/..." />
