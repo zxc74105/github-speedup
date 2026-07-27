@@ -23,7 +23,7 @@ class SettingsPage(QWidget):
         self._records_mgr = records_mgr
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
         title = QLabel("⚙ 设置")
@@ -52,7 +52,7 @@ class SettingsPage(QWidget):
             QGroupBox {
                 font-weight: 600; font-size: 13px;
                 border: 1px solid #e8e8e8; border-radius: 6px;
-                margin-top: 12px; padding: 16px 12px 12px;
+                margin-top: 12px; padding: 28px 12px 24px 12px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
