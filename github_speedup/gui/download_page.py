@@ -138,6 +138,7 @@ class DownloadPage(QWidget):
         self.table.setColumnWidth(3, 120)
         self.table.setColumnWidth(4, 90)
         self.table.verticalHeader().hide()
+        self.table.verticalHeader().setDefaultSectionSize(56)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setSelectionMode(QTableWidget.ExtendedSelection)
         self.table.itemSelectionChanged.connect(self._on_selection_changed)
