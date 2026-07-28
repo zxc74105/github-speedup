@@ -1725,9 +1725,9 @@
  [('python312.dll',
    'D:\\Program Files (x86)\\Python\\3.12.9\\python312.dll',
    'BINARY'),
-  ('PySide6\\plugins\\imageformats\\qwbmp.dll',
+  ('PySide6\\plugins\\imageformats\\qjpeg.dll',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qwbmp.dll',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qjpeg.dll',
    'BINARY'),
   ('PySide6\\plugins\\imageformats\\qtga.dll',
    'D:\\Program Files '
@@ -1737,75 +1737,75 @@
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qicns.dll',
    'BINARY'),
-  ('PySide6\\plugins\\imageformats\\qtiff.dll',
+  ('PySide6\\plugins\\iconengines\\qsvgicon.dll',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qtiff.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\imageformats\\qico.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qico.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\generic\\qtuiotouchplugin.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\generic\\qtuiotouchplugin.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\platforms\\qwindows.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qwindows.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\imageformats\\qjpeg.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qjpeg.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\platforms\\qdirect2d.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qdirect2d.dll',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\iconengines\\qsvgicon.dll',
    'BINARY'),
   ('PySide6\\plugins\\imageformats\\qwebp.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qwebp.dll',
    'BINARY'),
+  ('PySide6\\plugins\\platforms\\qoffscreen.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qoffscreen.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforms\\qdirect2d.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qdirect2d.dll',
+   'BINARY'),
   ('PySide6\\plugins\\imageformats\\qsvg.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qsvg.dll',
    'BINARY'),
-  ('PySide6\\plugins\\imageformats\\qgif.dll',
+  ('PySide6\\plugins\\generic\\qtuiotouchplugin.dll',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qgif.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\iconengines\\qsvgicon.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\iconengines\\qsvgicon.dll',
-   'BINARY'),
-  ('PySide6\\plugins\\platforms\\qoffscreen.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qoffscreen.dll',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\generic\\qtuiotouchplugin.dll',
    'BINARY'),
   ('PySide6\\plugins\\platforms\\qminimal.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qminimal.dll',
    'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qgif.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qgif.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qwbmp.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qwbmp.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforms\\qwindows.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\platforms\\qwindows.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qico.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qico.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qtiff.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\imageformats\\qtiff.dll',
+   'BINARY'),
   ('PySide6\\opengl32sw.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\opengl32sw.dll',
    'BINARY'),
-  ('PySide6\\plugins\\tls\\qschannelbackend.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\tls\\qschannelbackend.dll',
-   'BINARY'),
   ('libssl-3-x64.dll',
    'D:\\Program Files\\Git\\mingw64\\bin\\libssl-3-x64.dll',
+   'BINARY'),
+  ('libcrypto-3-x64.dll',
+   'D:\\Program Files\\Git\\mingw64\\bin\\libcrypto-3-x64.dll',
    'BINARY'),
   ('PySide6\\plugins\\tls\\qcertonlybackend.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\tls\\qcertonlybackend.dll',
    'BINARY'),
-  ('libcrypto-3-x64.dll',
-   'D:\\Program Files\\Git\\mingw64\\bin\\libcrypto-3-x64.dll',
-   'BINARY'),
   ('PySide6\\plugins\\networkinformation\\qnetworklistmanager.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\networkinformation\\qnetworklistmanager.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\tls\\qschannelbackend.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\plugins\\tls\\qschannelbackend.dll',
    'BINARY'),
   ('PySide6\\plugins\\tls\\qopensslbackend.dll',
    'D:\\Program Files '
@@ -1895,13 +1895,20 @@
   ('VCRUNTIME140.dll',
    'D:\\Program Files (x86)\\Python\\3.12.9\\VCRUNTIME140.dll',
    'BINARY'),
+  ('PySide6\\Qt6Gui.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\Qt6Gui.dll',
+   'BINARY'),
   ('PySide6\\Qt6Core.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\Qt6Core.dll',
    'BINARY'),
-  ('PySide6\\Qt6Gui.dll',
+  ('PySide6\\Qt6Svg.dll',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\Qt6Gui.dll',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\Qt6Svg.dll',
+   'BINARY'),
+  ('VCRUNTIME140_1.dll',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\VCRUNTIME140_1.dll',
    'BINARY'),
   ('shiboken6\\MSVCP140.dll',
    'D:\\Program Files '
@@ -1910,13 +1917,6 @@
   ('PySide6\\Qt6Network.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\Qt6Network.dll',
-   'BINARY'),
-  ('VCRUNTIME140_1.dll',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\VCRUNTIME140_1.dll',
-   'BINARY'),
-  ('PySide6\\Qt6Svg.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\Qt6Svg.dll',
    'BINARY'),
   ('PySide6\\Qt6Widgets.dll',
    'D:\\Program Files '
@@ -1931,24 +1931,20 @@
   ('libffi-8.dll',
    'D:\\Program Files (x86)\\Python\\3.12.9\\DLLs\\libffi-8.dll',
    'BINARY'),
+  ('python3.dll',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\python3.dll',
+   'BINARY'),
   ('PySide6\\pyside6.abi3.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\pyside6.abi3.dll',
-   'BINARY'),
-  ('PySide6\\MSVCP140_2.dll',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\MSVCP140_2.dll',
    'BINARY'),
   ('PySide6\\MSVCP140.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\MSVCP140.dll',
    'BINARY'),
-  ('python3.dll',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\python3.dll',
-   'BINARY'),
-  ('shiboken6\\shiboken6.abi3.dll',
+  ('PySide6\\MSVCP140_2.dll',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\shiboken6\\shiboken6.abi3.dll',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\MSVCP140_2.dll',
    'BINARY'),
   ('PySide6\\VCRUNTIME140.dll',
    'D:\\Program Files '
@@ -1958,13 +1954,17 @@
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\VCRUNTIME140_1.dll',
    'BINARY'),
-  ('shiboken6\\VCRUNTIME140_1.dll',
+  ('shiboken6\\shiboken6.abi3.dll',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\shiboken6\\VCRUNTIME140_1.dll',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\shiboken6\\shiboken6.abi3.dll',
    'BINARY'),
   ('shiboken6\\VCRUNTIME140.dll',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\shiboken6\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('shiboken6\\VCRUNTIME140_1.dll',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\shiboken6\\VCRUNTIME140_1.dll',
    'BINARY'),
   ('PySide6\\MSVCP140_1.dll',
    'D:\\Program Files '
@@ -1977,29 +1977,29 @@
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
-   'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
-   'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
    'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
+   'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
    'DATA'),
   ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
    'D:\\Program Files '
@@ -2014,423 +2014,450 @@
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\certifi\\py.typed',
    'DATA'),
-  ('PySide6\\translations\\qt_es.qm',
+  ('PySide6\\translations\\qt_help_ca.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_es.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_tr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_tr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_nl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_nl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_it.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_it.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_de.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_de.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_pl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_pl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_gd.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_gd.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_ca.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ca.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_nn.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_nn.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_uk.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_uk.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_lt.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_lt.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_tr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_tr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_pl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_pl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_hu.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_hu.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_zh_CN.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_zh_CN.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_da.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_da.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_sv.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_sv.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_pl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_pl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_fa.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_fa.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_sv.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_sv.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_he.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_he.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_ka.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ka.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_da.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_da.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_en.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_en.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_it.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_it.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_nl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_nl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_en.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_en.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_de.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_de.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_ar.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ar.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_hr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_hr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_pt_PT.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_pt_PT.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_gl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_gl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_tr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_tr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_lv.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_lv.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_sv.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_sv.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_en.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_en.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_ru.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ru.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_it.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_it.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_zh_TW.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_zh_TW.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_de.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_de.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_hu.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_hu.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_zh_CN.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_zh_CN.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_cs.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_cs.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_nl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_nl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_zh_CN.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_zh_CN.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_zh_TW.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_zh_TW.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_fr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_fr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_pt_BR.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_pt_BR.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ca.qm',
    'DATA'),
   ('PySide6\\translations\\qt_help_es.qm',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_es.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_help_ru.qm',
+  ('PySide6\\translations\\qt_tr.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ru.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_ja.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ja.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_gd.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_gd.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_es.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_es.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_sl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_sl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_sk.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_sk.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_fa.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_fa.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_bg.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_bg.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_hr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_hr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_bg.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_bg.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_bg.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_bg.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_ka.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ka.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_hu.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_hu.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_ko.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ko.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_nn.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_nn.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_fr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_fr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_uk.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_uk.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_cs.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_cs.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_ca.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ca.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_nn.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_nn.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_ko.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ko.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_fr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_fr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_ca.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ca.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_lg.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_lg.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_tr.qm',
    'DATA'),
   ('PySide6\\translations\\qtbase_he.qm',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_he.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_help_da.qm',
+  ('PySide6\\translations\\qt_ja.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_da.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ja.qm',
    'DATA'),
-  ('PySide6\\translations\\qtbase_sk.qm',
+  ('PySide6\\translations\\qt_hu.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_sk.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_hu.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_help_ar.qm',
+  ('PySide6\\translations\\qtbase_sv.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ar.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_sv.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_help_ja.qm',
+  ('PySide6\\translations\\qt_pt_BR.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ja.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_pt_BR.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_fi.qm',
+  ('PySide6\\translations\\qt_fa.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_fi.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_ru.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ru.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_zh_TW.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_zh_TW.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_fa.qm',
    'DATA'),
   ('PySide6\\translations\\qtbase_fi.qm',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_fi.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_gl.qm',
+  ('PySide6\\translations\\qtbase_bg.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_gl.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_bg.qm',
    'DATA'),
-  ('PySide6\\translations\\qt_ja.qm',
+  ('PySide6\\translations\\qt_lg.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ja.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_lg.qm',
    'DATA'),
-  ('PySide6\\translations\\qtbase_lv.qm',
+  ('PySide6\\translations\\qtbase_fr.qm',
    'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_lv.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_ko.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ko.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_pt_BR.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_pt_BR.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_pt_BR.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_pt_BR.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_sk.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_sk.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_sl.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_sl.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_hr.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_hr.qm',
-   'DATA'),
-  ('PySide6\\translations\\qtbase_ar.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ar.qm',
-   'DATA'),
-  ('PySide6\\translations\\qt_help_uk.qm',
-   'D:\\Program Files '
-   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_uk.qm',
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_fr.qm',
    'DATA'),
   ('PySide6\\translations\\qtbase_lg.qm',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_lg.qm',
    'DATA'),
+  ('PySide6\\translations\\qtbase_hr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_hr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_pl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_pl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_tr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_tr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_nn.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_nn.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_es.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_es.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_gl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_gl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_sv.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_sv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ru.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ru.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_sl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_sl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ka.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ka.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_uk.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_uk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_zh_CN.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_zh_CN.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_es.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_es.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_nl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_nl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_gd.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_gd.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_uk.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_uk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ar.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ar.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_nl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_nl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_sk.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_sk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ru.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ru.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_zh_TW.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_zh_TW.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_tr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_tr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_it.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_it.qm',
+   'DATA'),
   ('PySide6\\translations\\qt_help_ka.qm',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ka.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_hu.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_hu.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_en.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_en.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_fa.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_fa.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ka.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ka.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_de.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_de.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_fr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_fr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_nn.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_nn.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ja.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ja.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_cs.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_cs.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_fr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_fr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_lt.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_lt.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ca.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ca.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ca.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ca.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ja.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ja.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_fi.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_fi.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_it.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_it.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_bg.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_bg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_pt_BR.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_pt_BR.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_cs.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_cs.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_it.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_it.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_en.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_en.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_sv.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_sv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_zh_TW.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_zh_TW.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_de.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_de.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_de.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_de.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_lv.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_lv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_he.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_he.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ko.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_ko.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ko.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ko.qm',
    'DATA'),
   ('PySide6\\translations\\qt_help_cs.qm',
    'D:\\Program Files '
    '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_cs.qm',
    'DATA'),
+  ('PySide6\\translations\\qtbase_hu.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_hu.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_nl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_nl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_sl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_sl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_gd.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_gd.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ko.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ko.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ar.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ar.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_sk.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_sk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_pl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_pl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_zh_TW.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_zh_TW.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_da.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_da.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_en.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_en.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_hr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_hr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_sk.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_sk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_pl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_pl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_lv.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_lv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_zh_CN.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_zh_CN.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_gl.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_gl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_uk.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_uk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_pt_BR.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_pt_BR.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ar.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_ar.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_da.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_da.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_nn.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_nn.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_da.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_da.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_pt_PT.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_pt_PT.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_zh_CN.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_zh_CN.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_bg.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_bg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ru.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qtbase_ru.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_hr.qm',
+   'D:\\Program Files '
+   '(x86)\\Python\\3.12.9\\Lib\\site-packages\\PySide6\\translations\\qt_help_hr.qm',
+   'DATA'),
   ('base_library.zip',
    'D:\\AI-Projects\\github-speedup\\build\\build\\base_library.zip',
    'DATA')],
- [('reprlib',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\reprlib.py',
-   'PYMODULE'),
-  ('_collections_abc',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\_collections_abc.py',
-   'PYMODULE'),
-  ('sre_constants',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\sre_constants.py',
-   'PYMODULE'),
-  ('codecs',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\codecs.py',
-   'PYMODULE'),
-  ('genericpath',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\genericpath.py',
-   'PYMODULE'),
-  ('warnings',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\warnings.py',
-   'PYMODULE'),
-  ('operator',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\operator.py',
-   'PYMODULE'),
-  ('stat', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\stat.py', 'PYMODULE'),
-  ('collections.abc',
+ [('collections.abc',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\collections\\abc.py',
    'PYMODULE'),
   ('collections',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\collections\\__init__.py',
    'PYMODULE'),
-  ('weakref',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\weakref.py',
+  ('_weakrefset',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\_weakrefset.py',
+   'PYMODULE'),
+  ('sre_compile',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\sre_compile.py',
+   'PYMODULE'),
+  ('re._parser',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_parser.py',
+   'PYMODULE'),
+  ('re._constants',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_constants.py',
+   'PYMODULE'),
+  ('re._compiler',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_compiler.py',
+   'PYMODULE'),
+  ('re._casefix',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_casefix.py',
+   'PYMODULE'),
+  ('re',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\__init__.py',
+   'PYMODULE'),
+  ('codecs',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\codecs.py',
+   'PYMODULE'),
+  ('ntpath',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\ntpath.py',
+   'PYMODULE'),
+  ('heapq',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\heapq.py',
+   'PYMODULE'),
+  ('reprlib',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\reprlib.py',
+   'PYMODULE'),
+  ('operator',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\operator.py',
+   'PYMODULE'),
+  ('enum', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\enum.py', 'PYMODULE'),
+  ('types',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\types.py',
+   'PYMODULE'),
+  ('sre_constants',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\sre_constants.py',
+   'PYMODULE'),
+  ('keyword',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\keyword.py',
+   'PYMODULE'),
+  ('linecache',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\linecache.py',
+   'PYMODULE'),
+  ('warnings',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\warnings.py',
    'PYMODULE'),
   ('encodings.zlib_codec',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\encodings\\zlib_codec.py',
@@ -2800,61 +2827,34 @@
   ('encodings',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\encodings\\__init__.py',
    'PYMODULE'),
-  ('re._parser',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_parser.py',
-   'PYMODULE'),
-  ('re._constants',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_constants.py',
-   'PYMODULE'),
-  ('re._compiler',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_compiler.py',
-   'PYMODULE'),
-  ('re._casefix',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\_casefix.py',
-   'PYMODULE'),
-  ('re',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\re\\__init__.py',
-   'PYMODULE'),
+  ('stat', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\stat.py', 'PYMODULE'),
   ('sre_parse',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\sre_parse.py',
-   'PYMODULE'),
-  ('types',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\types.py',
-   'PYMODULE'),
-  ('heapq',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\heapq.py',
-   'PYMODULE'),
-  ('io', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\io.py', 'PYMODULE'),
-  ('_weakrefset',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\_weakrefset.py',
-   'PYMODULE'),
-  ('keyword',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\keyword.py',
-   'PYMODULE'),
-  ('copyreg',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\copyreg.py',
-   'PYMODULE'),
-  ('abc', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\abc.py', 'PYMODULE'),
-  ('linecache',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\linecache.py',
-   'PYMODULE'),
-  ('traceback',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\traceback.py',
-   'PYMODULE'),
-  ('locale',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\locale.py',
    'PYMODULE'),
   ('posixpath',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\posixpath.py',
    'PYMODULE'),
-  ('sre_compile',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\sre_compile.py',
+  ('abc', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\abc.py', 'PYMODULE'),
+  ('weakref',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\weakref.py',
    'PYMODULE'),
-  ('enum', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\enum.py', 'PYMODULE'),
+  ('traceback',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\traceback.py',
+   'PYMODULE'),
   ('functools',
    'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\functools.py',
    'PYMODULE'),
-  ('ntpath',
-   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\ntpath.py',
+  ('genericpath',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\genericpath.py',
+   'PYMODULE'),
+  ('locale',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\locale.py',
+   'PYMODULE'),
+  ('copyreg',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\copyreg.py',
+   'PYMODULE'),
+  ('io', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\io.py', 'PYMODULE'),
+  ('_collections_abc',
+   'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\_collections_abc.py',
    'PYMODULE'),
   ('os', 'D:\\Program Files (x86)\\Python\\3.12.9\\Lib\\os.py', 'PYMODULE')])

@@ -119,7 +119,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 proxy_url,
                 headers=headers,
                 stream=True,
-                timeout=None,
+                timeout=(10, 30),
             )
         except Exception as e:
             raise Exception(f"proxy request failed: {e}")
