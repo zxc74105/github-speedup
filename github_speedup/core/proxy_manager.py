@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .utils import (
     app_dir, build_proxy_url, strip_scheme, is_valid_proxy_domain,
-    find_proxies_file, find_active_proxies_file,
+    apply_browser_headers, find_proxies_file, find_active_proxies_file,
     SHARED_SESSION,
 )
 
@@ -309,10 +309,13 @@ def test_single_proxy(domain: str) -> ProxyTestResult:
     for scheme in ("https", "http"):
         proxy_url = build_proxy_url(scheme, raw_domain, PROXY_TEST_URL)
         start = time.time()
+        req_headers = {}
+        apply_browser_headers(req_headers)
         try:
             resp = SHARED_SESSION.get(
                 proxy_url,
                 timeout=(8, 15),
+                headers=req_headers,
                 stream=True,
             )
         except Exception:

@@ -1,11 +1,21 @@
 import os
 import sys
-import requests as std_requests
-from curl_cffi import requests
+import requests
 
-SHARED_SESSION = requests.Session(impersonate="chrome146", verify=False)
-HEAD_SESSION = std_requests.Session()
-HEAD_SESSION.verify = False
+
+SHARED_SESSION = requests.Session()
+adapter = requests.adapters.HTTPAdapter(
+    pool_connections=100,
+    pool_maxsize=100,
+    max_retries=0,
+)
+SHARED_SESSION.mount("https://", adapter)
+SHARED_SESSION.mount("http://", adapter)
+SHARED_SESSION.verify = False
+SHARED_SESSION.stream = True
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 BROWSER_HEADERS = {
