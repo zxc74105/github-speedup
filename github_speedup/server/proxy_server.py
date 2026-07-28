@@ -8,6 +8,8 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from typing import Optional
 
+import requests
+
 from ..core.utils import (
     SHARED_SESSION, apply_browser_headers, find_active_proxies_file,
     app_dir,
@@ -116,86 +118,44 @@ class ProxyHandler(BaseHTTPRequestHandler):
         output_path = os.path.join(temp_dir, file_name)
 
         try:
-            with open(output_path, "wb") as f:
-                f.truncate(file_size)
-
             self.send_response(200)
             self.send_header("Content-Type", "application/octet-stream")
             self.send_header("Content-Disposition", f'attachment; filename="{file_name}"')
             self.send_header("Content-Length", str(file_size))
-            self.send_header("X-Download-Mode", "multi-threaded-stream")
+            self.send_header("X-Download-Mode", "stream")
             self.end_headers()
 
-            part_size = 4 * 1024 * 1024
-            num_parts = (file_size + part_size - 1) // part_size
-            part_events = [threading.Event() for _ in range(num_parts)]
-            part_ok = [False] * num_parts
-            lock = threading.Lock()
-
-            def download_part(part_idx):
-                start = part_idx * part_size
-                end = min(start + part_size - 1, file_size - 1)
-                for attempt in range(len(proxy_list)):
-                    px = proxy_list[(part_idx + attempt) % len(proxy_list)]
-                    dl_url = f"{px}/{target_url}"
-                    headers = {"Range": f"bytes={start}-{end}"}
-                    apply_browser_headers(headers)
-                    try:
-                        resp = SHARED_SESSION.get(dl_url, headers=headers, stream=True, timeout=30)
-                        if resp.status_code not in (200, 206):
-                            resp.close()
-                            continue
-                        with open(output_path, "r+b") as f:
-                            f.seek(start)
-                            for chunk in resp.iter_content(65536):
-                                if chunk:
-                                    f.write(chunk)
-                        resp.close()
-                        with lock:
-                            part_ok[part_idx] = True
-                        part_events[part_idx].set()
-                        try:
-                            domain = urlparse(px).hostname or px
-                            if self.records_manager:
-                                self.records_manager.record_success(domain, end - start + 1, 0)
-                        except Exception:
-                            pass
-                        return
-                    except Exception:
+            total_written = 0
+            for attempt, px in enumerate(proxy_list):
+                dl_url = f"{px}/{target_url}"
+                headers = {}
+                apply_browser_headers(headers)
+                try:
+                    sess = requests.Session()
+                    sess.verify = False
+                    resp = sess.get(dl_url, headers=headers, stream=True, timeout=120)
+                    if resp.status_code != 200:
+                        sess.close()
                         continue
-                part_events[part_idx].set()
-
-            for i in range(num_parts):
-                t = threading.Thread(target=download_part, args=(i,), daemon=True)
-                t.start()
-
-            for i in range(num_parts):
-                part_events[i].wait()
-                with lock:
-                    ok = part_ok[i]
-                if not ok:
-                    if log:
-                        log.log("STREAM FAIL part=%d", i)
-                    break
-                p_start = i * part_size
-                p_end = min(p_start + part_size, file_size)
-                count = p_end - p_start
-                with open(output_path, "rb") as f:
-                    f.seek(p_start)
-                    remaining = count
-                    while remaining > 0:
-                        chunk = f.read(min(65536, remaining))
-                        if not chunk:
-                            break
-                        try:
+                    with open(output_path, "wb") as f:
+                        for chunk in resp.iter_content(65536):
+                            if not chunk:
+                                continue
+                            f.write(chunk)
+                            f.flush()
                             self.wfile.write(chunk)
-                        except Exception:
-                            return
-                        remaining -= len(chunk)
+                            self.wfile.flush()
+                            total_written += len(chunk)
+                    resp.close()
+                    sess.close()
+                    if log:
+                        log.log("STREAM DONE %s bytes=%d", px, total_written)
+                    return
+                except Exception:
+                    continue
 
             if log:
-                ok_count = sum(1 for ok in part_ok if ok)
-                log.log("STREAM DONE parts=%d/%d", ok_count, num_parts)
+                log.log("STREAM FAIL all proxies, written=%d", total_written)
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
