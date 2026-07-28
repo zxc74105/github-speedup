@@ -9,10 +9,10 @@ from urllib.parse import urlparse
 from typing import Optional
 
 from ..core.utils import (
-    SHARED_SESSION, apply_browser_headers, build_proxy_url,
+    SHARED_SESSION, apply_browser_headers, find_active_proxies_file,
     app_dir,
 )
-from ..core.downloader import DownloadTask, start_background_download, guess_file_name
+from ..core.downloader import get_file_size_via_proxies, guess_file_name
 from ..core.proxy_manager import ProxyManager
 from ..core.records import RecordsManager
 from ..core.logger import AccessLogger
@@ -53,7 +53,9 @@ class ProxyHandler(BaseHTTPRequestHandler):
         if self.path == "/api/status":
             self._status()
             return
-        self._proxy()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/octet-stream")
+        self.end_headers()
 
     def _health(self):
         self.send_response(200)
@@ -74,6 +76,21 @@ class ProxyHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body.encode())
 
+    def _read_proxy_list(self) -> list:
+        result = []
+        try:
+            with open(find_active_proxies_file(), "r", encoding="utf-8") as f:
+                entries = json.load(f)
+            for e in entries:
+                if e.get("status") == "active" and e.get("enabled", True):
+                    s = e.get("scheme", "https")
+                    d = e.get("domain", "")
+                    if s and d:
+                        result.append(f"{s}://{d}")
+        except Exception:
+            pass
+        return result
+
     def _proxy(self):
         target_url = self._get_target_url()
         if not target_url:
@@ -82,54 +99,103 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
         log = AccessLogger.get()
         if log:
-            log.log("API DOWNLOAD %s from %s", target_url, self.client_address[0])
+            log.log("API STREAM %s from %s", target_url, self.client_address[0])
 
-        temp_dir = tempfile.mkdtemp(prefix="gs_proxy_")
+        proxy_list = self._read_proxy_list()
+        if not proxy_list:
+            self.send_error(502, "no active proxies available")
+            return
+
+        file_size = get_file_size_via_proxies(proxy_list, target_url, 30)
+        if file_size <= 0:
+            self.send_error(502, "cannot determine file size")
+            return
+
+        file_name = guess_file_name(target_url)
+        temp_dir = tempfile.mkdtemp(prefix="gs_")
+        output_path = os.path.join(temp_dir, file_name)
+
         try:
-            task = DownloadTask(
-                url=target_url,
-                save_dir=temp_dir,
-                part_size_bytes=4 * 1024 * 1024,
-                max_concurrent=20,
-                max_retry=3,
-                timeout=30,
-            )
+            with open(output_path, "wb") as f:
+                f.truncate(file_size)
 
-            if self.records_manager:
-                def record_success(domain, bs, spd):
-                    self.records_manager.record_success(domain, bs, spd)
-                def record_failure(domain):
-                    self.records_manager.record_failure(domain)
-            else:
-                record_success = None
-                record_failure = None
-
-            result = start_background_download(task, record_success, record_failure)
-
-            if result.status != "completed":
-                self.send_error(502, f"download failed: {result.status}")
-                return
-
-            file_name = result.file_name or guess_file_name(target_url)
-            output_path = os.path.join(temp_dir, file_name)
-            if not os.path.isfile(output_path):
-                self.send_error(502, "file not found after download")
-                return
-
-            file_size = os.path.getsize(output_path)
             self.send_response(200)
             self.send_header("Content-Type", "application/octet-stream")
             self.send_header("Content-Disposition", f'attachment; filename="{file_name}"')
             self.send_header("Content-Length", str(file_size))
-            self.send_header("X-Download-Mode", "multi-threaded-20x")
+            self.send_header("X-Download-Mode", "multi-threaded-stream")
             self.end_headers()
 
-            with open(output_path, "rb") as f:
-                while True:
-                    chunk = f.read(65536)
-                    if not chunk:
-                        break
-                    self.wfile.write(chunk)
+            part_size = 4 * 1024 * 1024
+            num_parts = (file_size + part_size - 1) // part_size
+            part_events = [threading.Event() for _ in range(num_parts)]
+            part_ok = [False] * num_parts
+            lock = threading.Lock()
+
+            def download_part(part_idx):
+                start = part_idx * part_size
+                end = min(start + part_size - 1, file_size - 1)
+                for attempt in range(len(proxy_list)):
+                    px = proxy_list[(part_idx + attempt) % len(proxy_list)]
+                    dl_url = f"{px}/{target_url}"
+                    headers = {"Range": f"bytes={start}-{end}"}
+                    apply_browser_headers(headers)
+                    try:
+                        resp = SHARED_SESSION.get(dl_url, headers=headers, stream=True, timeout=30)
+                        if resp.status_code not in (200, 206):
+                            resp.close()
+                            continue
+                        with open(output_path, "r+b") as f:
+                            f.seek(start)
+                            for chunk in resp.iter_content(65536):
+                                if chunk:
+                                    f.write(chunk)
+                        resp.close()
+                        with lock:
+                            part_ok[part_idx] = True
+                        part_events[part_idx].set()
+                        try:
+                            domain = urlparse(px).hostname or px
+                            if self.records_manager:
+                                self.records_manager.record_success(domain, end - start + 1, 0)
+                        except Exception:
+                            pass
+                        return
+                    except Exception:
+                        continue
+                part_events[part_idx].set()
+
+            for i in range(num_parts):
+                t = threading.Thread(target=download_part, args=(i,), daemon=True)
+                t.start()
+
+            for i in range(num_parts):
+                part_events[i].wait()
+                with lock:
+                    ok = part_ok[i]
+                if not ok:
+                    if log:
+                        log.log("STREAM FAIL part=%d", i)
+                    break
+                p_start = i * part_size
+                p_end = min(p_start + part_size, file_size)
+                count = p_end - p_start
+                with open(output_path, "rb") as f:
+                    f.seek(p_start)
+                    remaining = count
+                    while remaining > 0:
+                        chunk = f.read(min(65536, remaining))
+                        if not chunk:
+                            break
+                        try:
+                            self.wfile.write(chunk)
+                        except Exception:
+                            return
+                        remaining -= len(chunk)
+
+            if log:
+                ok_count = sum(1 for ok in part_ok if ok)
+                log.log("STREAM DONE parts=%d/%d", ok_count, num_parts)
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
