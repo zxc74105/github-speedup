@@ -12,6 +12,8 @@ a = Analysis(
     binaries=[],
     datas=[('proxies.json', '.')],
     hiddenimports=[
+        'curl_cffi',
+        'cffi',
         'github_speedup',
         'github_speedup.core',
         'github_speedup.core.downloader',
