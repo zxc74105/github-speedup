@@ -8,11 +8,10 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from typing import Optional
 
-import requests
+from curl_cffi import requests
 
 from ..core.utils import (
-    SHARED_SESSION, apply_browser_headers, find_active_proxies_file,
-    app_dir,
+    find_active_proxies_file, app_dir,
 )
 from ..core.downloader import get_file_size_via_proxies, guess_file_name
 from ..core.proxy_manager import ProxyManager
@@ -128,12 +127,9 @@ class ProxyHandler(BaseHTTPRequestHandler):
             total_written = 0
             for attempt, px in enumerate(proxy_list):
                 dl_url = f"{px}/{target_url}"
-                headers = {}
-                apply_browser_headers(headers)
                 try:
-                    sess = requests.Session()
-                    sess.verify = False
-                    resp = sess.get(dl_url, headers=headers, stream=True, timeout=120)
+                    sess = requests.Session(impersonate="chrome146", verify=False)
+                    resp = sess.get(dl_url, stream=True, timeout=120)
                     if resp.status_code != 200:
                         sess.close()
                         continue

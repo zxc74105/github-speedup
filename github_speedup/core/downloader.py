@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 
 from .utils import (
-    SHARED_SESSION, apply_browser_headers, find_active_proxies_file,
+    SHARED_SESSION, HEAD_SESSION, find_active_proxies_file,
 )
 from .logger import AccessLogger
 
@@ -77,10 +77,8 @@ def get_file_size_via_proxies(proxy_list: List[str], raw_url: str, timeout: int)
             u = f"{proxy}{raw_url}"
         else:
             u = f"{proxy}/{raw_url}"
-        headers = {}
-        apply_browser_headers(headers)
         try:
-            resp = SHARED_SESSION.head(u, timeout=timeout, headers=headers)
+            resp = HEAD_SESSION.head(u, timeout=timeout)
             cl = resp.headers.get("Content-Length")
             resp.close()
             if cl and cl.isdigit():
@@ -221,7 +219,6 @@ def start_background_download(
             return job.index, Exception("cancelled"), job.proxy, 0
         download_url = f"{job.proxy}/{task.url}"
         headers = {"Range": f"bytes={job.start}-{job.end}"}
-        apply_browser_headers(headers)
         try:
             resp = SHARED_SESSION.get(
                 download_url, headers=headers,
@@ -306,7 +303,6 @@ def start_background_download(
                         break
                     download_url = f"{p}/{task.url}"
                     headers = {"Range": f"bytes={fp.start}-{fp.end}"}
-                    apply_browser_headers(headers)
                     try:
                         resp = SHARED_SESSION.get(
                             download_url, headers=headers,
