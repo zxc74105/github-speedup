@@ -1,5 +1,7 @@
 import json
 import os
+import shutil
+import tempfile
 import threading
 import time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -10,6 +12,7 @@ from ..core.utils import (
     SHARED_SESSION, apply_browser_headers, build_proxy_url,
     app_dir,
 )
+from ..core.downloader import DownloadTask, start_background_download, guess_file_name
 from ..core.proxy_manager import ProxyManager
 from ..core.records import RecordsManager
 from ..core.logger import AccessLogger
@@ -79,77 +82,56 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
         log = AccessLogger.get()
         if log:
-            log.log("REQUEST %s from %s", target_url, self.client_address[0])
+            log.log("API DOWNLOAD %s from %s", target_url, self.client_address[0])
 
-        proxies = self.proxy_manager.get_all() if self.proxy_manager else []
-        last_err = None
-        for p in proxies:
-            if p.status != "active" or not p.enabled or not p.scheme:
-                continue
-            proxy_url = build_proxy_url(p.scheme, p.domain, target_url)
-            if log:
-                log.log("TRY %s", p.domain)
-
-            start = time.time()
-            try:
-                bytes_written = self._proxy_request(proxy_url)
-                elapsed = time.time() - start
-                if bytes_written > 0 and elapsed > 0:
-                    speed_mbps = (bytes_written / elapsed) * 8 / 1_000_000
-                    if log:
-                        log.log("SUCCESS %s - %d bytes, %.1f Mbps", p.domain, bytes_written, speed_mbps)
-                    if self.records_manager:
-                        self.records_manager.record_success(p.domain, bytes_written, speed_mbps)
-                    return
-            except Exception as e:
-                if log:
-                    log.log("FAIL %s: %v", p.domain, e)
-                last_err = e
-
-        if log:
-            log.log("ALL FAILED: %v", last_err)
-        self.send_error(502, f"all proxies failed: {last_err}")
-
-    def _proxy_request(self, proxy_url: str) -> int:
-        headers = dict(self.headers)
-        apply_browser_headers(headers)
-
+        temp_dir = tempfile.mkdtemp(prefix="gs_proxy_")
         try:
-            resp = SHARED_SESSION.get(
-                proxy_url,
-                headers=headers,
-                stream=True,
-                timeout=(10, 30),
+            task = DownloadTask(
+                url=target_url,
+                save_dir=temp_dir,
+                part_size_bytes=4 * 1024 * 1024,
+                max_concurrent=20,
+                max_retry=3,
+                timeout=30,
             )
-        except Exception as e:
-            raise Exception(f"proxy request failed: {e}")
 
-        if resp.status_code >= 400:
-            resp.close()
-            raise Exception(f"proxy returned {resp.status_code}")
+            if self.records_manager:
+                def record_success(domain, bs, spd):
+                    self.records_manager.record_success(domain, bs, spd)
+                def record_failure(domain):
+                    self.records_manager.record_failure(domain)
+            else:
+                record_success = None
+                record_failure = None
 
-        ct = resp.headers.get("Content-Type", "")
-        if "text/html" in ct.lower():
-            resp.close()
-            raise Exception("proxy returned text/html (landing page)")
+            result = start_background_download(task, record_success, record_failure)
 
-        self.send_response(resp.status_code)
-        for key, value in resp.headers.items():
-            if key.lower() not in ("transfer-encoding", "content-encoding"):
-                self.send_header(key, value)
-        self.send_header("X-Proxy", proxy_url)
-        self.end_headers()
+            if result.status != "completed":
+                self.send_error(502, f"download failed: {result.status}")
+                return
 
-        written = 0
-        try:
-            for chunk in resp.iter_content(chunk_size=65536):
-                if chunk:
+            file_name = result.file_name or guess_file_name(target_url)
+            output_path = os.path.join(temp_dir, file_name)
+            if not os.path.isfile(output_path):
+                self.send_error(502, "file not found after download")
+                return
+
+            file_size = os.path.getsize(output_path)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Disposition", f'attachment; filename="{file_name}"')
+            self.send_header("Content-Length", str(file_size))
+            self.send_header("X-Download-Mode", "multi-threaded-20x")
+            self.end_headers()
+
+            with open(output_path, "rb") as f:
+                while True:
+                    chunk = f.read(65536)
+                    if not chunk:
+                        break
                     self.wfile.write(chunk)
-                    written += len(chunk)
-        except Exception:
-            pass
-        resp.close()
-        return written
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 class ProxyServer:
