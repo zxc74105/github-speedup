@@ -1,46 +1,72 @@
 name: build
 
-on: workflow_dispatch
+on:
+    workflow_dispatch:
 
 permissions:
     contents: write
-
-env:
-    CARGO_TERM_COLOR: always
 
 jobs:
     build:
         runs-on: ${{ matrix.os }}
         strategy:
+            fail-fast: false
             matrix:
                 include:
-                    - os: windows-latest
-                      target: multi-proxy-downloader-win-x64.exe
-                    - os: ubuntu-latest
-                      target: multi-proxy-downloader-linux-x64
-                    - os: macos-latest
-                      target: multi-proxy-downloader-macos-arm64
+                    - name: windows-x86_64
+                      os: windows-latest
+                      artifact: github-speedup-x86_64.exe
+                      pyarch: x64
+                    - name: windows-arm64
+                      os: windows-11-arm
+                      artifact: github-speedup-arm64.exe
+                      pyarch: arm64
+                    - name: linux-x86_64
+                      os: ubuntu-latest
+                      artifact: github-speedup-x86_64
+                    - name: linux-arm64
+                      os: ubuntu-24.04-arm
+                      artifact: github-speedup-arm64
+                    - name: macos
+                      os: macos-latest
+                      artifact: github-speedup-darwin
 
         steps:
             - uses: actions/checkout@v4
 
-            - name: Set up Go
-              uses: actions/setup-go@v4
+            - name: Set up Python
+              uses: actions/setup-python@v5
               with:
-                  go-version: "stable"
+                  python-version: "3.12"
+                  architecture: ${{ matrix.pyarch || 'x64' }}
 
-            - name: Build
+            - name: Install dependencies
               run: |
-                  go mod tidy
-                  go build -ldflags "-w -s" -o "${{ matrix.target }}"
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt pyinstaller
 
-            - name: Prepare artifact
+            - name: Build binary
+              shell: bash
               run: |
-                  mkdir artifact
-                  mv ${{ matrix.target }} artifact
+                  if [ "${{ matrix.os }}" = "macos-latest" ]; then
+                      export TARGET_ARCH=universal2
+                  fi
+                  pyinstaller --noconfirm --clean github-speedup.spec
 
-            - name: Upload artifact
-              uses: actions/upload-artifact@v4
+            - name: Prepare artifacts
+              shell: bash
+              run: |
+                  mkdir -p artifact
+                  if [ "${{ matrix.os }}" = "macos-latest" ]; then
+                      lipo -thin x86_64 -output artifact/github-speedup-darwin-x86_64 dist/github-speedup
+                      lipo -thin arm64 -output artifact/github-speedup-darwin-arm64 dist/github-speedup
+                  else
+                      cp dist/github-speedup* artifact/${{ matrix.artifact }}
+                  fi
+                  ls -la artifact
+
+            - uses: actions/upload-artifact@v4
               with:
-                  name: ${{ matrix.os }}
+                  name: ${{ matrix.name }}
                   path: artifact
+                  if-no-files-found: error

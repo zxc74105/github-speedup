@@ -1,11 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+import sys
+
+_datas = [
+    ('github_speedup', 'github_speedup'),
+    ('main.py', '.'),
+    ('proxies.json', '.'),
+]
+
+_binaries = []
+if sys.platform == 'win32':
+    _binaries.append(('bin/aria2c.exe', 'bin'))
+
+_target_arch = os.environ.get('TARGET_ARCH') or None
 
 a = Analysis(
     ['main.py'],
     pathex=[],
-    binaries=[],
-    datas=[('github_speedup', 'github_speedup'), ('main.py', '.')],
+    binaries=_binaries,
+    datas=_datas,
     hiddenimports=['tlclient', 'tls_client', 'tls_client.sessions'],
     hookspath=[],
     hooksconfig={},
@@ -32,7 +46,7 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,
+    target_arch=_target_arch,
     codesign_identity=None,
     entitlements_file=None,
 )
