@@ -26,12 +26,15 @@ jobs:
                     - name: linux-x86_64
                       os: ubuntu-latest
                       artifact: github-speedup-x86_64
+                      pyarch: x64
                     - name: linux-arm64
                       os: ubuntu-24.04-arm
                       artifact: github-speedup-arm64
+                      pyarch: arm64
                     - name: macos
                       os: macos-latest
                       artifact: github-speedup-darwin
+                      pyarch: arm64
 
         steps:
             - uses: actions/checkout@v4
@@ -40,7 +43,7 @@ jobs:
               uses: actions/setup-python@v5
               with:
                   python-version: "3.12"
-                  architecture: ${{ matrix.pyarch || 'x64' }}
+                  architecture: ${{ matrix.pyarch }}
 
             - name: Install dependencies
               run: |
