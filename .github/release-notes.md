@@ -1,6 +1,34 @@
-- Added inactivity timeout for downloads (default 20s) to prevent hanging on slow proxies.
-- Added `--timeout` flag to configure the inactivity period.
-- Added debug logging for proxy switching events.
-- Integrated speed and ETA metrics into the `--verbose` logging mode.
-- Improved `--json-output` flag to automatically enable `--verbose` mode.
-- Improved `--json-output` to report full progress statistics every 5 seconds.
+# v2.2.0 版本说明（2026-07-31）
+
+## 核心变更：下载组件直连镜像代理
+
+- **架构澄清**：9090 HTTP 加速代理只给外部工具（浏览器/curl/aria2/脚本）用，软件自身下载组件不再经过本地代理。
+- **aria2 直连镜像**：`build_mirror_urls` 去掉 `http://127.0.0.1:6801/` 本地代理前缀，直接连接 `https://镜像域名/...`。
+- **移除 viper 代理依赖**：删除下载组件对本地 viper 代理（6801）的启动/停止逻辑。
+
+## 新增：legacy 多代理并行分片下载（主路径）
+
+- 代理按测速结果排序（快的在前）。
+- 后台探测文件真实大小（Range 0-0 + identity → Content-Range，实测 9.5s→4.4s）。
+- 预分配文件 → 按 `max(4MB, total/8)` 分片 → 每片独立线程直连镜像（`Range: bytes=X-Y`）并行下载。
+- 分片失败自动换下一个代理重试。
+- 0.5s 实时上报进度（confirmed_bytes 累加）。
+
+## 修复
+
+- **大文件进度条 0%→100% 跳变**：根因是 aria2 走本地 viper 代理全量缓冲无进度；改并行分片直连后，137MB 安装包 15s 内下载 16MB 且进度持续增长，18MB 文件 11.3s 完成、全程有中间进度。
+- **GUI 任务"大小"列恒为 0 B**：`_on_progress` 字段名 `total_bytes` → `totalBytes`。
+- **被动加速 gzip 导致 Range/大小错乱**：`proxy_server.py` 请求显式加 `Accept-Encoding: identity`。
+- **下载页新增事件日志面板**：实时显示开始/完成/失败/删除记录。
+
+## 测试结果
+
+- yt-dlp 18MB：completed，11.3s，total=18023276，26 个进度事件，中间值逐步增长。
+- AI-SSH-Assistant 137MB：探测到 143654078 字节，15s 已下载 16MB，进度持续增长。
+- aria2 直连镜像实测 TLS 不兼容（0B/0B 卡死），仅保留为兜底，不能作为主路径。
+
+## 详细记录
+
+- 修改记录：`docs/修改记录/MODIFY_aria2直连_并行分片_20260731.md`
+- 错误记录：`错误修改记录.txt`【错误9】
+- 架构视图已同步更新：docs/01、02、04、05、06、07、09、12、13、17、21、目录索引

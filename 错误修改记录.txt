@@ -1,0 +1,218 @@
+========================================
+GitHub-Speedup 错误修改记录
+========================================
+记录时间: 2026-07-31
+----------------------------------------
+
+【错误 1】exe 启动即崩溃：playwright_stealth JS 文件缺失
+--------------------------------------------------------
+现象:
+  exe 启动后直接崩溃，报错找不到
+  playwright_stealth\js\generate.magic.arrays.js
+
+原因:
+  vipertls -> playwright_stealth -> stealth.py 在模块导入时
+  加载 js 目录下的 JS 文件，而 PyInstaller 默认只打包 .py
+  文件，不打包 .js 数据文件，导致 exe 中找不到该文件。
+
+状态: 已解决
+
+----------------------------------------
+
+【错误 2】exe 体积暴涨：playwright 被自动打包
+--------------------------------------------------------
+现象:
+  exe 从 51MB 增大到 93MB，暴增 40MB。
+
+原因:
+  vipertls 的间接依赖 playwright_stealth -> playwright
+  （微软 Playwright 浏览器自动化框架，约 40MB+）。
+  PyInstaller 自动追踪依赖，把 playwright 整个打包进 exe。
+  不是项目代码引入，是 vipertls 的传递依赖。
+  卸载 playwright 后，vipertls 顶层导入直接崩溃（必须 import
+  playwright），需要 patch vipertls 使其变成可选依赖。
+
+状态: 已解决，exe 降到 57MB
+
+注意: vipertls 的 patch 写在 site-packages 里，
+       pip 升级 vipertls 后 patch 会丢失，需重新打。
+
+----------------------------------------
+
+【错误 3】代理测速线程超时问题
+--------------------------------------------------------
+现象:
+  代理测速在 GUI 里显示"一半代理不可用"，实际大部分是通的
+  （实测 60/65 可达）。
+
+原因:
+  旧版用 ThreadPoolExecutor + wait(timeout)，超时后 worker
+  线程仍卡在 vipertls 请求上，非 daemon 线程导致结果丢失、
+  进程无法退出。且 preflight_check 加载了旧版保存的 stale
+  "offline" 状态，导致界面显示错误。
+
+状态: 已解决
+
+----------------------------------------
+
+【错误 4】线程设 daemon 报错
+--------------------------------------------------------
+现象:
+  RuntimeError: cannot set daemon status of active thread
+
+原因:
+  线程 start() 之后不能再修改 t.daemon 属性。之前的写法是
+  在线程池 shutdown 后遍历已启动的线程尝试改成 daemon，
+  必然报错。
+
+状态: 已解决
+
+----------------------------------------
+
+【错误 5】非主线程调用 QTimer.singleShot 静默丢弃
+--------------------------------------------------------
+现象:
+  代理测试期间 GUI 表格不刷新，看不到进度。
+
+原因:
+  QTimer.singleShot 在 daemon 线程（没有事件循环）里调用时，
+  timer 永远不触发，回调被静默丢弃。跨线程通信必须用 Qt
+  Signal（pyqtSignal 自动 QueuedConnection），不能用 QTimer。
+
+状态: 已解决
+
+----------------------------------------
+
+【错误 6】测试时误判"无界面"
+--------------------------------------------------------
+现象:
+  启动 exe 后看不到 GUI 窗口，误以为程序启动无界面。
+
+原因:
+  用 powershell Start-Process -WindowStyle Hidden 启动 exe，
+  Hidden 参数把 Qt 主窗口也隐藏了。正常启动窗口正常显示。
+
+状态: 已解决（测试方法问题，非程序 bug）
+
+----------------------------------------
+
+【错误 7】僵尸进程堆积
+--------------------------------------------------------
+现象:
+  系统里堆积了数百个 github-speedup.exe 进程，占用端口和内存。
+
+原因:
+  反复启动 exe 做测试，onefile 模式还有父子进程，
+  加上没清理，导致进程越积越多。
+
+状态: 已处理
+
+========================================
+
+【错误 8】下载没有中间过程，直接显示下载完成
+--------------------------------------------------------
+现象:
+  下载任务期间进度条一直 0%，状态停在"下载中"，
+  下载完成后直接跳到 100% "已完成"，全程看不到中间进度。
+  更严重: 实际下载出来的文件是 0 字节空文件（被覆盖为
+  "completed" 但内容为空）。
+
+原因:
+  下载走 aria2 分支，aria2 通过本地代理（端口 6801）
+  转发下载。实测 aria2 的 tellStatus 全程显示
+  totalLength=0 / completedLength=0，直到 complete。
+  根因链条:
+  1. local_viper_proxy.py 的 GET 转发用了
+     resp.iter_content() —— 但 vipertls 的 ViperResponse
+     根本没有 iter_content 方法（只有 .content 全量字节）。
+  2. 于是代理在发完 200 响应头之后抛 AttributeError 崩溃，
+     客户端只收到"200 + 0 字节 body"。
+  3. aria2 认为下载成功（200）但内容为空 → totalLength=0，
+     立即 complete，文件 0 字节。
+  4. GUI 进度逻辑 total_bytes>0 才计算百分比 → 进度恒 0。
+  5. start_background_download 检测到文件存在即写 total_bytes，
+     直接跳 100%。
+  （另一个隐患: legacy 路径的 Range 分片请求带
+   Accept-Encoding: gzip，代理返回压缩后大小导致 Range 错乱，
+   产生 0 字节 part。下载必须用 Accept-Encoding: identity。）
+
+影响范围:
+  - local_viper_proxy.py (响应转发核心 bug)
+  - downloader.py (legacy 下载头与分片)
+
+修改策略:
+  1. local_viper_proxy.py:
+     GET 改为读 resp.content（vipertls 全量缓冲的字节），
+     手动补 Content-Length: len(body) 再写出。
+     这样 aria2 能拿到准确文件大小与真实内容。
+  2. downloader.py:
+     - 下载请求统一加 Accept-Encoding: identity，
+       避免代理 gzip 压缩导致 Range/大小错乱。
+     - get_file_size_via_proxies 改用 Range: bytes=0-0
+       + identity 探测，取 206 响应的 Content-Range 真实大小。
+     - legacy 路径改为单流下载（放弃多分片 Range，因为
+       多数代理 Range 返回压缩后大小，分片不可靠）。
+  3. 回归防护:
+     - 只改代理转发和下载逻辑，不动代理列表/信号/UI 结构
+     - 修改后验证: 小文件下载出 204800 字节且进度有中间值、
+       preflight 功能仍正常
+
+状态: 已修复（验证中）
+
+========================================
+
+【错误 9】下载没有中间过程（复现），实际是 aria2 无进度
+--------------------------------------------------------
+现象:
+  用户下载真实大文件（如 AI-SSH-Assistant 137MB 安装包、
+  yt-dlp.exe 18MB）时，进度条从 0% 直接跳到 100%，
+  没有中间进度增长。
+
+原因（2026-07-31 深入排查）:
+  错误8 只修了 viper 代理的转发，但 aria2 仍然通过本地
+  viper 代理（端口 6801）下载，而 viper 用 resp.content
+  全量缓冲整个文件后才一次性写出：
+  - aria2 在缓冲期间收不到任何字节 → tellStatus 一直
+    completedLength=0 / totalLength=0。
+  - 缓冲完成后一次性写满 → 进度从 0 直接跳到 100%。
+  实测（yt-dlp 18MB，aria2 走 6801）：
+    事件序列 (0.5,0,0)...(7.2,0,0) → (7.7, 18226085, 18226085)。
+  另有实测：aria2 直连镜像（绕过 6801）也卡死
+  （0B/0B 持续 60s+，aria2 自带 TLS 与镜像不兼容），
+  因此 aria2 无法作为可靠主路径。
+
+用户架构澄清:
+  - 9090 HTTP 加速代理是给外部工具用的（浏览器/curl/aria2/
+    脚本），不是给软件自身组件用的。
+  - 软件自身下载组件（aria2、Python 分片）应直接连接镜像
+    代理网址（https://镜像域名/https://github.com/...），
+    不应经过本地 9090/6801 代理。
+
+修改策略（2026-07-31）:
+  1. aria2_downloader.py build_mirror_urls:
+     去掉 http://127.0.0.1:6801/ 前缀，直连镜像。
+  2. downloader.py:
+     - legacy 路径改为「多代理并行分片」下载:
+       代理按 speed 排序（快的前置）；
+       后台探测真实大小（限时 min(timeout,10)）；
+       预分配文件 → 按 max(4MB, total/8) 分片 →
+       每片独立线程用 Range 头直连镜像下载（seek 写偏移）；
+       分片失败自动换下一个代理重试；
+       confirmed_bytes 实时累加 → 0.5s ticker 上报进度。
+     - 探测失败（大小<=0）时回退单流顺序尝试（原逻辑）。
+     - 移除 viper 代理（6801）的启动/停止，组件不再走本地代理。
+     - 更新 aria2 URI 域名解析（不再依赖 6801 前缀）。
+  3. GUI 修复: download_page.py _on_progress 字段名
+     total_bytes → totalBytes（"大小"列不再恒为 0 B）。
+  4. proxy_server.py（9090 被动加速，外部工具用）:
+     请求显式加 Accept-Encoding: identity。
+
+验证结果:
+  - yt-dlp 18MB: completed，11.3s，total=18023276，26 个进度事件
+    中间值逐步增长（524834 → 11470222），无 0→100 跳变。
+  - AI-SSH-Assistant 137MB: 探测到 143654078 字节，
+    15 秒内已下载 16MB，进度事件持续增长。
+  - aria2 直连镜像实测卡死（TLS 不兼容），仅保留为兜底。
+
+状态: 已修复并验证
+

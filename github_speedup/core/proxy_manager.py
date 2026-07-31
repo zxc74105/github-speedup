@@ -3,13 +3,15 @@ import os
 import threading
 import time
 import dataclasses
-from typing import List, Optional
+import queue
+from typing import List, Optional, Callable
+import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .utils import (
     app_dir, build_proxy_url, strip_scheme, is_valid_proxy_domain,
     apply_browser_headers, find_proxies_file, find_active_proxies_file,
-    SHARED_SESSION,
+    SHARED_SESSION, get_viper, BROWSER_HEADERS,
 )
 
 PROXY_TEST_URL = "https://github.com/zxc74105/ceshi/blob/main/speedtest.txt"
@@ -49,9 +51,7 @@ class ProxyTestResult:
 @dataclasses.dataclass
 class PreflightResult:
     available: int = 0
-    silent: int = 0
     total: int = 0
-    silentDomains: List[str] = dataclasses.field(default_factory=list)
 
 
 class ProxyManager:
@@ -59,7 +59,6 @@ class ProxyManager:
         self._mu = threading.Lock()
         self._active_path = find_active_proxies_file()
         self._proxies: List[ProxyItem] = []
-        self._silent_list: List[str] = []
         self._load()
 
     def _load(self):
@@ -195,34 +194,59 @@ class ProxyManager:
             self._proxies = [p for p in self._proxies if p.domain not in raw_set]
             self._save()
 
-    def preflight_check(self) -> PreflightResult:
+    @staticmethod
+    def _run_with_timeout(tasks: list, timeout: int = 180):
+        """用 daemon 线程并发执行，总超时后返回已完成的结果"""
+        q = queue.Queue()
+        for t in tasks:
+            q.put(t)
+        results = []
+        lock = threading.Lock()
+
+        def worker():
+            while True:
+                try:
+                    t = q.get_nowait()
+                except queue.Empty:
+                    break
+                try:
+                    r = t()
+                except Exception:
+                    continue
+                with lock:
+                    results.append(r)
+
+        n = min(30, len(tasks))
+        threads = [threading.Thread(target=worker, daemon=True) for _ in range(n)]
+        for th in threads:
+            th.start()
+        deadline = time.time() + timeout
+        for th in threads:
+            remaining = deadline - time.time()
+            if remaining > 0:
+                th.join(timeout=remaining)
+        return results
+
+    def preflight_check(self, on_result=None) -> PreflightResult:
         with self._mu:
             proxies = list(self._proxies)
+            # 重置所有状态为 active，超时未测的代理保持乐观默认
+            for p in self._proxies:
+                p.status = "active"
+                p.latency = ""
+                p.speed = ""
         available = 0
-        silent = 0
-        silent_domains = []
-        updated = []
 
         def test(p: ProxyItem):
             result = test_single_proxy(p.domain)
-            if result.status == "active":
-                return p.domain, result, "active"
-            else:
-                return p.domain, result, "silent"
+            return p.domain, result
 
-        with ThreadPoolExecutor(max_workers=20) as pool:
-            futures = {pool.submit(test, p): p for p in proxies if p.enabled}
-            for future in as_completed(futures):
-                domain, result, status = future.result()
-                updated.append((domain, result))
-                if status == "active":
-                    available += 1
-                else:
-                    silent += 1
-                    silent_domains.append(domain)
+        results = self._run_with_timeout(
+            [lambda p=p: test(p) for p in proxies if p.enabled], timeout=180,
+        )
 
-        with self._mu:
-            for domain, result in updated:
+        for domain, result in results:
+            with self._mu:
                 for p in self._proxies:
                     if p.domain == domain:
                         p.scheme = result.scheme
@@ -230,32 +254,43 @@ class ProxyManager:
                         p.speed = result.speed
                         p.status = result.status
                         break
+            if result.status == "active":
+                available += 1
+            if on_result:
+                on_result(domain, result)
+
+        with self._mu:
             self._sort()
             self._save()
-            self._silent_list = silent_domains
 
         return PreflightResult(
-            available=available, silent=silent, total=len(proxies),
-            silentDomains=silent_domains,
+            available=available, total=len(proxies),
         )
 
-    def test_all(self):
+    def test_all(self, on_result=None):
         with self._mu:
             proxies = list(self._proxies)
+            for p in self._proxies:
+                p.status = "active"
+                p.latency = ""
+                p.speed = ""
 
         def test(p: ProxyItem):
             result = test_single_proxy(p.domain)
             return p.domain, result
 
-        with ThreadPoolExecutor(max_workers=20) as pool:
-            futures = {pool.submit(test, p): p for p in proxies}
-            for future in as_completed(futures):
-                domain, result = future.result()
-                self.update(domain,
-                            scheme=result.scheme,
-                            latency=result.latency,
-                            speed=result.speed,
-                            status=result.status)
+        results = self._run_with_timeout(
+            [lambda p=p: test(p) for p in proxies if p.enabled], timeout=180,
+        )
+
+        for domain, result in results:
+            self.update(domain,
+                        scheme=result.scheme,
+                        latency=result.latency,
+                        speed=result.speed,
+                        status=result.status)
+            if on_result:
+                on_result(domain, result)
 
     def test_one(self, domain: str) -> ProxyTestResult:
         result = test_single_proxy(strip_scheme(domain))
@@ -267,67 +302,93 @@ class ProxyManager:
         return result
 
     def _sort(self):
-        status_order = {"active": 0, "silent": 1, "offline": 2, "checking": 3}
         self._proxies.sort(key=lambda p: (
-            status_order.get(p.status, 9),
-            -parse_speed_mbps(p.speed) if p.status == "active" else 0,
-            parse_latency_ms(p.latency) if p.status == "silent" else 0,
+            0 if p.status == "active" else 1,
+            parse_speed_secs(p.speed) if p.status == "active" else 999999,
         ))
 
-    def get_silent_list(self) -> List[str]:
-        with self._mu:
-            return list(self._silent_list)
 
-    def unsilence(self, domain: str):
-        raw = strip_scheme(domain)
-        with self._mu:
-            self._silent_list = [d for d in self._silent_list if d != raw]
-
-
-def parse_speed_mbps(speed: str) -> float:
-    if not speed or speed == "N/A":
-        return 0
-    s = speed.replace(" Mbps", "")
+def parse_speed_secs(speed: str) -> float:
+    if not speed or speed in ("-", "N/A"):
+        return 999999
+    s = speed.replace("s", "")
     try:
         return float(s)
     except ValueError:
         return 0
 
 
-def parse_latency_ms(latency: str) -> int:
-    if not latency or latency == "N/A":
-        return 999999
-    s = latency.replace(" ms", "")
+PROXY_HARD_TIMEOUT = 15  # seconds (unused, kept for reference)
+PROXY_SPEED_TEST_URL = "https://github.com/zxc74105/ceshi/raw/main/speedtest_200k.bin"
+PROXY_SPEED_TIMEOUT = 60  # seconds, 200KB 文件测速超时
+
+def _viper_download(url: str):
+    """vipertls 下载，直接在当前线程用缓存的客户端，返回 (bytes_len, seconds) 或 None"""
     try:
-        return int(s)
-    except ValueError:
-        return 999999
+        v = get_viper()
+        t0 = time.time()
+        r = v.get(url, headers=BROWSER_HEADERS)
+        secs = time.time() - t0
+        ct = r.headers.get("Content-Type", "")
+        if "text/html" in ct.lower():
+            return None
+        return len(r.content), secs
+    except Exception:
+        return None
+
+
+def _speed_test(url: str, timeout: int):
+    """用 vipertls 下载 200KB 测速文件，返回 body 传输秒数或 None"""
+    try:
+        v = get_viper()
+        t0 = time.time()
+        r = v.get(url, headers=BROWSER_HEADERS)
+        secs = time.time() - t0
+        ct = r.headers.get("Content-Type", "")
+        if "text/html" in ct.lower():
+            return None
+        if len(r.content) > 0:
+            return secs
+    except Exception:
+        pass
+    return None
 
 
 def test_single_proxy(domain: str) -> ProxyTestResult:
     raw_domain = strip_scheme(domain)
     for scheme in ("https", "http"):
         proxy_url = build_proxy_url(scheme, raw_domain, PROXY_TEST_URL)
-        start = time.time()
-        req_headers = {}
-        apply_browser_headers(req_headers)
+        viper = get_viper()
+        if viper is not None:
+            # Phase 1: 连通性（34 字节）
+            r = _viper_download(proxy_url)
+            if r is None:
+                continue
+            _, conn_secs = r
+            result = ProxyTestResult(
+                domain=raw_domain, scheme=scheme,
+                latency=f"{int(conn_secs * 1000)} ms", speed="-",
+                status="active",
+            )
+            # Phase 2: 网速测（1MB，只算 body 下载时间）
+            speed_url = build_proxy_url(scheme, raw_domain, PROXY_SPEED_TEST_URL)
+            body_secs = _speed_test(speed_url, PROXY_SPEED_TIMEOUT)
+            if body_secs is not None:
+                result.speed = f"{body_secs:.1f}s"
+            return result
         try:
+            total_start = time.time()
             resp = SHARED_SESSION.get(
-                proxy_url,
-                timeout=(8, 15),
-                headers=req_headers,
-                stream=True,
+                proxy_url, timeout=5, headers=BROWSER_HEADERS, stream=True,
             )
         except Exception:
             continue
-        latency_ms = int((time.time() - start) * 1000)
         ct = resp.headers.get("Content-Type", "")
         if "text/html" in ct.lower():
             resp.close()
             continue
-        start = time.time()
-        total_bytes = 0
         try:
+            total_bytes = 0
             for chunk in resp.iter_content(chunk_size=32768):
                 if chunk:
                     total_bytes += len(chunk)
@@ -335,22 +396,16 @@ def test_single_proxy(domain: str) -> ProxyTestResult:
             resp.close()
             continue
         resp.close()
-        elapsed = time.time() - start
-        status = "active"
-        speed_str = "N/A"
-        if elapsed > 0 and total_bytes > 0:
-            speed_mbps = (total_bytes / elapsed) * 8 / 1_000_000
-            speed_str = f"{speed_mbps:.1f} Mbps"
-            if speed_mbps < 0.1:
-                status = "silent"
-        if latency_ms > 2000:
-            status = "silent"
+        total_secs = time.time() - total_start
+        speed_str = "-"
+        if total_secs > 0 and total_bytes > 0:
+            speed_str = f"{total_secs:.1f}s"
         return ProxyTestResult(
             domain=raw_domain, scheme=scheme,
-            latency=f"{latency_ms} ms", speed=speed_str,
-            status=status,
+            latency=f"{int(total_secs * 1000)} ms", speed=speed_str,
+            status="active",
         )
     return ProxyTestResult(
         domain=raw_domain, scheme="",
-        latency="N/A", speed="N/A", status="offline",
+        latency="-", speed="-", status="offline",
     )

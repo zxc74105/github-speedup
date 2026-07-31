@@ -128,7 +128,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
             total_written = 0
             for attempt, px in enumerate(proxy_list):
                 dl_url = f"{px}/{target_url}"
-                headers = {}
+                headers = {"Accept-Encoding": "identity"}
                 apply_browser_headers(headers)
                 try:
                     sess = requests.Session()

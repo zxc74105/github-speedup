@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget,
     QTableWidgetItem, QHeaderView, QDialog, QLineEdit, QSpinBox,
     QLabel, QFormLayout, QDialogButtonBox, QTabWidget, QFrame,
-    QProgressBar, QMessageBox, QApplication,
+    QProgressBar, QMessageBox, QApplication, QTextEdit,
 )
 from PySide6.QtCore import Qt, Signal, QObject, QThread, QTimer
 from PySide6.QtGui import QFont, QColor, QBrush
@@ -87,6 +87,7 @@ class DownloadPage(QWidget):
         self._filter = "all"
         self._next_id = 1
         self._selected_task_id: Optional[int] = None
+        self._task_logs: dict[int, list[str]] = {}
 
         self._load_tasks()
 
@@ -155,7 +156,9 @@ class DownloadPage(QWidget):
         self.detail_worker = QLabel("Worker 实时状态")
         self.detail_tabs.addTab(self.detail_worker, "Worker")
 
-        self.detail_log = QLabel("事件日志")
+        self.detail_log = QTextEdit()
+        self.detail_log.setReadOnly(True)
+        self.detail_log.setMaximumHeight(180)
         self.detail_tabs.addTab(self.detail_log, "日志")
 
         layout.addWidget(self.detail_tabs)
@@ -277,6 +280,8 @@ class DownloadPage(QWidget):
                         f"状态: {task.status}\n"
                         f"保存目录: {task.saveDir}"
                     )
+                logs = self._task_logs.get(self._selected_task_id, [])
+                self.detail_log.setPlainText("\n".join(logs))
                 return
         self._selected_task_id = None
         self.detail_tabs.setVisible(False)
@@ -334,6 +339,7 @@ class DownloadPage(QWidget):
             info = next((t for t in self._tasks if t.id == task_id), None)
             if not info:
                 return
+            self._append_log(task_id, f"开始下载: {info.fileName}")
             info.status = "downloading"
             self._save_tasks()
 
@@ -349,10 +355,26 @@ class DownloadPage(QWidget):
                 if result.total_bytes > 0:
                     info.progress = (result.downloaded / result.total_bytes) * 100
                 self._save_tasks()
+                if result.status == "completed":
+                    self._append_log(task_id, "下载完成")
+                elif result.status == "failed":
+                    self._append_log(task_id, "下载失败")
+                elif result.status == "cancelled":
+                    self._append_log(task_id, "已取消")
 
         t = threading.Thread(target=run, daemon=True)
         self._task_threads[task_id] = t
         t.start()
+
+    def _append_log(self, task_id: int, msg: str):
+        from datetime import datetime
+        ts = datetime.now().strftime("%H:%M:%S")
+        line = f"[{ts}] {msg}"
+        if task_id not in self._task_logs:
+            self._task_logs[task_id] = []
+        self._task_logs[task_id].append(line)
+        if self._selected_task_id == task_id:
+            self.detail_log.append(line)
 
     def _on_progress(self, pd: ProgressData):
         info = next((t for t in self._tasks if t.id == pd.task_id), None)
@@ -361,12 +383,11 @@ class DownloadPage(QWidget):
         if pd.downloaded is not None:
             info.downloaded = pd.downloaded
         if pd.total_bytes is not None:
-            info.total_bytes = pd.total_bytes
+            info.totalBytes = pd.total_bytes
         if pd.speed is not None:
             info.speed = pd.speed
-        if pd.total_bytes and pd.total_bytes > 0:
-            info.progress = (info.downloaded / info.total_bytes) * 100
-        info.status = pd.status or "downloading"
+        if info.totalBytes > 0:
+            info.progress = (info.downloaded / info.totalBytes) * 100
 
     def _cancel_selected(self):
         if self._selected_task_id is None:
@@ -380,6 +401,7 @@ class DownloadPage(QWidget):
         self._refresh_table()
 
     def _delete_selected(self):
+        import os
         rows = self.table.selectionModel().selectedRows()
         if not rows:
             QMessageBox.warning(self, "提示", "请选择要删除的任务")
@@ -391,12 +413,15 @@ class DownloadPage(QWidget):
                 ids.append(items[row.row()].id)
         if not ids:
             return
-        confirm = QMessageBox.question(
-            self, "确认删除", f"将删除 {len(ids)} 个任务?",
-            QMessageBox.Yes | QMessageBox.No,
-        )
-        if confirm != QMessageBox.Yes:
-            return
+        for t in self._tasks:
+            if t.id in ids:
+                fpath = os.path.join(t.saveDir, t.fileName)
+                try:
+                    if os.path.isfile(fpath):
+                        os.remove(fpath)
+                        self._append_log(t.id, f"已删除本地文件: {t.fileName}")
+                except Exception:
+                    pass
         self._tasks = [t for t in self._tasks if t.id not in ids]
         self._save_tasks()
         if self._selected_task_id in ids:

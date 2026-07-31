@@ -1,151 +1,487 @@
 [
   {
-    "domain": "gh-proxy.com",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "50 ms",
-    "speed": ""
-  },
-  {
-    "domain": "ghproxy.net",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "git.yylx.win",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "gh.927223.xyz",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
     "domain": "gh.felicity.ac.cn",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "669 ms",
+    "speed": "0.7s"
   },
   {
-    "domain": "tvv.tw",
+    "domain": "g.blfrp.cn",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "1106 ms",
+    "speed": "0.7s"
   },
   {
-    "domain": "jiashu.1win.eu.org",
+    "domain": "github.geekery.cn",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "623 ms",
+    "speed": "0.7s"
   },
   {
-    "domain": "gh.inkchills.cn",
+    "domain": "gh-proxy.net",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "949 ms",
+    "speed": "0.8s"
   },
   {
-    "domain": "gh.my-website.ccwu.cc",
+    "domain": "gh.sixyin.com",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "886 ms",
+    "speed": "0.8s"
   },
   {
-    "domain": "gh.07150721.xyz",
+    "domain": "gh.ddlc.top",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "994 ms",
+    "speed": "0.9s"
   },
   {
-    "domain": "cfgh.ikgy.top",
+    "domain": "ghpr.cc",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "1142 ms",
+    "speed": "1.0s"
   },
   {
-    "domain": "xsadwsd.kdns.fr",
+    "domain": "ghproxy.cxkpro.top",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "ghproxy.felicity.land",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "gh-proxy.org",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "v4.gh-proxy.org",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "943 ms",
+    "speed": "1.0s"
   },
   {
     "domain": "v6.gh-proxy.org",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "1182 ms",
+    "speed": "1.1s"
   },
   {
-    "domain": "cdn.gh-proxy.org",
+    "domain": "github.dpik.top",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "1314 ms",
+    "speed": "1.1s"
   },
   {
     "domain": "edgeone.gh-proxy.org",
     "scheme": "https",
     "enabled": true,
     "status": "active",
-    "latency": "",
-    "speed": ""
+    "latency": "1247 ms",
+    "speed": "1.1s"
+  },
+  {
+    "domain": "github.tmby.shop",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1007 ms",
+    "speed": "1.2s"
+  },
+  {
+    "domain": "gh-proxy.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1139 ms",
+    "speed": "1.2s"
+  },
+  {
+    "domain": "cdn.akaere.online",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2049 ms",
+    "speed": "1.3s"
+  },
+  {
+    "domain": "slink.ltd",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2208 ms",
+    "speed": "1.3s"
+  },
+  {
+    "domain": "gitproxy.mrhjx.cn",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1512 ms",
+    "speed": "1.5s"
+  },
+  {
+    "domain": "ghproxy.monkeyray.net",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1605 ms",
+    "speed": "1.6s"
+  },
+  {
+    "domain": "github.tbap.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1387 ms",
+    "speed": "1.6s"
+  },
+  {
+    "domain": "gh-proxy.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1335 ms",
+    "speed": "1.6s"
+  },
+  {
+    "domain": "git.yylx.win",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1450 ms",
+    "speed": "1.7s"
+  },
+  {
+    "domain": "githubdog.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1346 ms",
+    "speed": "1.7s"
+  },
+  {
+    "domain": "gh.b52m.cn",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1649 ms",
+    "speed": "1.8s"
+  },
+  {
+    "domain": "tvv.tw",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1384 ms",
+    "speed": "1.9s"
+  },
+  {
+    "domain": "down.mxw.qzz.io",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3885 ms",
+    "speed": "2.0s"
+  },
+  {
+    "domain": "fastgit.cc",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3807 ms",
+    "speed": "2.0s"
+  },
+  {
+    "domain": "gh.monlor.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4588 ms",
+    "speed": "2.1s"
+  },
+  {
+    "domain": "gh.acmsz.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4459 ms",
+    "speed": "2.1s"
+  },
+  {
+    "domain": "gh.chjina.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4119 ms",
+    "speed": "2.1s"
+  },
+  {
+    "domain": "github.mxw.qzz.io",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3936 ms",
+    "speed": "2.1s"
+  },
+  {
+    "domain": "gh.jasonzeng.dev",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3672 ms",
+    "speed": "2.1s"
+  },
+  {
+    "domain": "gh.my-website.ccwu.cc",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1267 ms",
+    "speed": "2.2s"
+  },
+  {
+    "domain": "gh.dpik.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2112 ms",
+    "speed": "2.4s"
   },
   {
     "domain": "hk.gh-proxy.org",
     "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1497 ms",
+    "speed": "2.4s"
+  },
+  {
+    "domain": "gh.noki.icu",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4829 ms",
+    "speed": "2.5s"
+  },
+  {
+    "domain": "ghproxy.imciel.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3705 ms",
+    "speed": "2.5s"
+  },
+  {
+    "domain": "cdn.gh-proxy.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2148 ms",
+    "speed": "2.6s"
+  },
+  {
+    "domain": "jiashu.1win.eu.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1662 ms",
+    "speed": "2.8s"
+  },
+  {
+    "domain": "v4.gh-proxy.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1869 ms",
+    "speed": "2.9s"
+  },
+  {
+    "domain": "ghproxy.net",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4653 ms",
+    "speed": "2.9s"
+  },
+  {
+    "domain": "js.jiangss.shop",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2228 ms",
+    "speed": "3.1s"
+  },
+  {
+    "domain": "gh.ruan.dpdns.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1923 ms",
+    "speed": "3.1s"
+  },
+  {
+    "domain": "gh.bugdey.us.kg",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2045 ms",
+    "speed": "3.7s"
+  },
+  {
+    "domain": "gp.zkitefly.eu.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1958 ms",
+    "speed": "3.8s"
+  },
+  {
+    "domain": "down.mxw.xx.kg",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3084 ms",
+    "speed": "3.9s"
+  },
+  {
+    "domain": "cdn.gh-proxy.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3273 ms",
+    "speed": "3.9s"
+  },
+  {
+    "domain": "free.cn.eu.org",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2599 ms",
+    "speed": "4.1s"
+  },
+  {
+    "domain": "xsadwsd.kdns.fr",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3273 ms",
+    "speed": "4.1s"
+  },
+  {
+    "domain": "github.xxlab.tech",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2438 ms",
+    "speed": "4.2s"
+  },
+  {
+    "domain": "ghp.keleyaa.com",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2465 ms",
+    "speed": "4.2s"
+  },
+  {
+    "domain": "ghm.078465.xyz",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2888 ms",
+    "speed": "4.5s"
+  },
+  {
+    "domain": "ghfast.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "3649 ms",
+    "speed": "4.5s"
+  },
+  {
+    "domain": "ghproxy.felicity.land",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2779 ms",
+    "speed": "4.8s"
+  },
+  {
+    "domain": "cfgh.ikgy.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2917 ms",
+    "speed": "5.0s"
+  },
+  {
+    "domain": "gh.927223.xyz",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2599 ms",
+    "speed": "5.1s"
+  },
+  {
+    "domain": "gh.07150721.xyz",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "2768 ms",
+    "speed": "5.1s"
+  },
+  {
+    "domain": "ghfile.geekertao.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4727 ms",
+    "speed": "8.7s"
+  },
+  {
+    "domain": "proxy.yaoyaoling.net",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "14378 ms",
+    "speed": "13.5s"
+  },
+  {
+    "domain": "gh.catmak.name",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "4649 ms",
+    "speed": "-"
+  },
+  {
+    "domain": "gh.meali.top",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "5949 ms",
+    "speed": "-"
+  },
+  {
+    "domain": "github.ednovas.xyz",
+    "scheme": "https",
+    "enabled": true,
+    "status": "active",
+    "latency": "1695 ms",
+    "speed": "-"
+  },
+  {
+    "domain": "github.chenc.dev",
+    "scheme": "",
     "enabled": true,
     "status": "active",
     "latency": "",
@@ -153,82 +489,34 @@
   },
   {
     "domain": "gh-proxy.cn",
-    "scheme": "https",
+    "scheme": "",
     "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
+    "status": "offline",
+    "latency": "-",
+    "speed": "-"
   },
   {
-    "domain": "gitproxy.mrhjx.cn",
-    "scheme": "https",
+    "domain": "github-proxy.memory-echoes.cn",
+    "scheme": "",
     "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
+    "status": "offline",
+    "latency": "-",
+    "speed": "-"
   },
   {
-    "domain": "gh.sixyin.com",
-    "scheme": "https",
+    "domain": "gh.inkchills.cn",
+    "scheme": "",
     "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
+    "status": "offline",
+    "latency": "-",
+    "speed": "-"
   },
   {
-    "domain": "gh.monlor.com",
-    "scheme": "https",
+    "domain": "gh.idayer.com",
+    "scheme": "",
     "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "ghfast.top",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "gh.jasonzeng.dev",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "gp.zkitefly.eu.org",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "ghproxy.monkeyray.net",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "gh.noki.icu",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
-  },
-  {
-    "domain": "g.blfrp.cn",
-    "scheme": "https",
-    "enabled": true,
-    "status": "active",
-    "latency": "",
-    "speed": ""
+    "status": "offline",
+    "latency": "-",
+    "speed": "-"
   }
 ]

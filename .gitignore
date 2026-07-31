@@ -4,3 +4,10 @@ frontend/dist
 dist/*
 build/
 dist/
+__pycache__/
+*.pyc
+*.log
+nul
+vipertls/
+.playwright-mcp/
+tasks.json

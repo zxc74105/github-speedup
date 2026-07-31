@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "domain": "test-proxy.com",
+    "successCount": 2,
+    "totalBytes": 3145728,
+    "averageSpeed": 1500000.0,
+    "failCount": 0,
+    "firstUsedAt": "2026-07-30T22:09:21.804765",
+    "lastUsedAt": "2026-07-30T22:09:21.805834",
+    "speedHistory": [
+      1000000,
+      2000000
+    ]
+  },
+  {
+    "domain": "gh.felicity.ac.cn",
+    "successCount": 2,
+    "totalBytes": 36452170,
+    "averageSpeed": 1433531.9998276178,
+    "failCount": 0,
+    "firstUsedAt": "2026-07-31T12:44:51.039453",
+    "lastUsedAt": "2026-07-31T12:46:01.565859",
+    "speedHistory": [
+      612049.4700087412,
+      2255014.5296464944
+    ]
+  }
+]

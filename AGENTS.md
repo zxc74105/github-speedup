@@ -69,3 +69,12 @@ GitHub 代理（gh-proxy.com 等）是 URL-prefix 反向代理，只代理 `gith
 - 调用位置: `github_speedup/core/downloader.py`（HEAD + 下载请求）、`github_speedup/proxy/proxy_checker.py`（测速）、`github_speedup/server/http_server.py`（被动加速）
 - 包含: User-Agent/Accept/Accept-Language/Sec-Fetch-* 等 14 个标准浏览器头
 
+### 下载架构（2026-07-31 确认）
+- **9090 HTTP 加速服务是给外部工具用的**（浏览器/curl/aria2/脚本），不是给软件自身组件用的。
+- **软件自身下载组件（aria2 + Python 并行分片）直接连接镜像代理网址**，格式 `https://镜像域名/https://github.com/原始路径`，**不经过** `http://127.0.0.1:9090/...` 或 `http://127.0.0.1:6801/...`。
+- 下载主路径：`downloader.py` `_legacy_download` 多代理并行分片（代理按 speed 排序 → 探测大小 → Range 分片 → 每片独立线程直连镜像 → 失败换代理重试 → 实时进度）。
+- aria2（`aria2_downloader.py`）为兜底：`build_mirror_urls` 直连镜像，不再走本地 viper 代理（6801）。
+- 实测：aria2 直连镜像 TLS 不兼容会卡死（0B/0B），故 aria2 仅作兜底，不能作为主路径。
+- 相关修改记录：`docs/修改记录/MODIFY_aria2直连_并行分片_20260731.md`。
+
+

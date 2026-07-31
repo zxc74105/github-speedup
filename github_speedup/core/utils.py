@@ -1,6 +1,28 @@
 import os
 import sys
+import threading
 import requests
+
+try:
+    from vipertls import Client as _ViperClient
+    _viper_local = threading.local()
+
+    def get_viper():
+        try:
+            return _viper_local.client
+        except AttributeError:
+            _viper_local.client = _ViperClient(
+                impersonate="chrome_124", follow_redirects=True,
+                timeout=30, verify=False,
+            )
+            return _viper_local.client
+
+    VIPER = get_viper()
+except ImportError:
+    VIPER = None
+
+    def get_viper():
+        return None
 
 
 SHARED_SESSION = requests.Session()
@@ -52,7 +74,7 @@ def apply_browser_headers(headers: dict):
 def app_dir() -> str:
     if getattr(sys, "frozen", False):
         return os.path.dirname(sys.executable)
-    return os.path.abspath(".")
+    return os.path.dirname(os.path.abspath(sys.argv[0]))
 
 
 def find_proxies_file() -> str:

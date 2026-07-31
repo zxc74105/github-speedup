@@ -5,19 +5,26 @@ from PySide6.QtWidgets import (
     QTableWidgetItem, QHeaderView, QLineEdit, QLabel, QFrame,
     QMessageBox, QProgressBar, QFileDialog,
 )
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QFont, QColor, QBrush
 
-from ..core.proxy_manager import ProxyManager, parse_speed_mbps, parse_latency_ms
+from ..core.proxy_manager import ProxyManager
 from ..core.records import RecordsManager
 
 
 class ProxyPage(QWidget):
+    _proxy_result_ready = Signal()
+    _test_finished = Signal()
+    _preflight_finished = Signal(str, int)
+
     def __init__(self, proxy_mgr: ProxyManager, records_mgr: RecordsManager):
         super().__init__()
         self._proxy_mgr = proxy_mgr
         self._records_mgr = records_mgr
         self._search_text = ""
+        self._proxy_result_ready.connect(self._refresh_proxies)
+        self._test_finished.connect(self._on_test_finished)
+        self._preflight_finished.connect(self._on_preflight_finished)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -84,6 +91,10 @@ class ProxyPage(QWidget):
         rh_sub.setStyleSheet("color: #999; font-size: 11px;")
         rh_layout.addWidget(rh_sub)
         rh_layout.addStretch()
+        self.btn_clear_records = QPushButton("清空记录")
+        self.btn_clear_records.setObjectName("dangerBtn")
+        self.btn_clear_records.clicked.connect(self._clear_records)
+        rh_layout.addWidget(self.btn_clear_records)
         layout.addWidget(records_header)
 
         self.record_table = QTableWidget()
@@ -154,10 +165,7 @@ class ProxyPage(QWidget):
         proxies = self._filtered_proxies()
         self.proxy_table.setRowCount(len(proxies))
         for i, p in enumerate(proxies):
-            dot_color = {
-                "active": "#00c853", "silent": "#ffb300",
-                "offline": "#ff1744", "checking": "#90caf9",
-            }.get(p.status, "#90caf9")
+            dot_color = "#00c853" if p.status == "active" else "#ff1744"
 
             domain_widget = QWidget()
             dl = QHBoxLayout(domain_widget)
@@ -169,16 +177,8 @@ class ProxyPage(QWidget):
             dl.addStretch()
             self.proxy_table.setCellWidget(i, 0, domain_widget)
 
-            status_colors = {
-                "active": "green", "silent": "orange",
-                "offline": "red", "checking": "blue",
-            }
-            status_texts = {
-                "active": "可用", "silent": "静默",
-                "offline": "离线", "checking": "检测中",
-            }
-            st = QTableWidgetItem(status_texts.get(p.status, p.status))
-            st.setForeground(QBrush(QColor(status_colors.get(p.status, "#999"))))
+            st = QTableWidgetItem("可用" if p.status == "active" else "不可用")
+            st.setForeground(QBrush(QColor("#00c853" if p.status == "active" else "#ff1744")))
             self.proxy_table.setItem(i, 1, st)
 
             lat = QTableWidgetItem(p.latency or "-")
@@ -237,42 +237,44 @@ class ProxyPage(QWidget):
                 last_used = "从未"
             self.record_table.setItem(i, 4, QTableWidgetItem(last_used))
 
+    def _on_proxy_result(self, domain: str, result):
+        self._proxy_result_ready.emit()
+
+    def _on_test_finished(self):
+        self.btn_test_all.setEnabled(True)
+        self.btn_test_all.setText("全部测速")
+        self._refresh_proxies()
+
+    def _on_preflight_finished(self, msg: str, silent_count: int = 0):
+        self._show_message(msg)
+        self._refresh_proxies()
+        parent = self.parent()
+        while parent and not hasattr(parent, "update_silent_count"):
+            parent = parent.parent()
+        if parent and hasattr(parent, "update_silent_count"):
+            parent.update_silent_count(silent_count)
+
     def _test_all(self):
         self.btn_test_all.setEnabled(False)
         self.btn_test_all.setText("测速中...")
 
         def run():
-            self._proxy_mgr.test_all()
-            from PySide6.QtCore import QMetaObject, Qt, Q_ARG
-            QMetaObject.invokeMethod(
-                self.btn_test_all, "setEnabled", Qt.QueuedConnection, Q_ARG(bool, True)
-            )
-            QMetaObject.invokeMethod(
-                self.btn_test_all, "setText", Qt.QueuedConnection, Q_ARG(str, "全部测速")
-            )
-            QMetaObject.invokeMethod(self, "_refresh_proxies", Qt.QueuedConnection)
+            self._proxy_mgr.test_all(on_result=self._on_proxy_result)
+            self._test_finished.emit()
 
         threading.Thread(target=run, daemon=True).start()
 
     def _preflight(self):
         def run():
-            result = self._proxy_mgr.preflight_check()
-            from PySide6.QtCore import QMetaObject, Qt, Q_ARG
-            msg = f"预检完成: {result.available} 可用, {result.silent} 静默"
-            QMetaObject.invokeMethod(
-                self, "_show_message", Qt.QueuedConnection, Q_ARG(str, msg)
-            )
-            QMetaObject.invokeMethod(self, "_refresh_proxies", Qt.QueuedConnection)
-            parent = self.parent()
-            while parent and not hasattr(parent, "update_silent_count"):
-                parent = parent.parent()
-            if parent and hasattr(parent, "update_silent_count"):
-                QMetaObject.invokeMethod(
-                    parent, "update_silent_count", Qt.QueuedConnection,
-                    Q_ARG(int, result.silent),
-                )
+            result = self._proxy_mgr.preflight_check(on_result=self._on_proxy_result)
+            msg = f"预检完成: {result.available} 个可用"
+            self._preflight_finished.emit(msg, result.total - result.available)
 
         threading.Thread(target=run, daemon=True).start()
+
+    def _clear_records(self):
+        self._records_mgr.clear()
+        self._refresh_records()
 
     def _import_proxies(self):
         path, _ = QFileDialog.getOpenFileName(
