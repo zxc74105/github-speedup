@@ -29,9 +29,13 @@ jobs:
                       os: ubuntu-24.04-arm
                       artifact: github-speedup-arm64
                       pyarch: arm64
-                    - name: macos
+                    - name: macos-x86_64
+                      os: macos-15-intel
+                      artifact: github-speedup-darwin-x86_64
+                      pyarch: x64
+                    - name: macos-arm64
                       os: macos-latest
-                      artifact: github-speedup-darwin
+                      artifact: github-speedup-darwin-arm64
                       pyarch: arm64
 
         steps:
@@ -50,22 +54,13 @@ jobs:
 
             - name: Build binary
               shell: bash
-              run: |
-                  if [ "${{ matrix.os }}" = "macos-latest" ]; then
-                      export TARGET_ARCH=universal2
-                  fi
-                  pyinstaller --noconfirm --clean github-speedup.spec
+              run: pyinstaller --noconfirm --clean github-speedup.spec
 
             - name: Prepare artifacts
               shell: bash
               run: |
                   mkdir -p artifact
-                  if [ "${{ matrix.os }}" = "macos-latest" ]; then
-                      lipo -thin x86_64 -output artifact/github-speedup-darwin-x86_64 dist/github-speedup
-                      lipo -thin arm64 -output artifact/github-speedup-darwin-arm64 dist/github-speedup
-                  else
-                      cp dist/github-speedup* artifact/${{ matrix.artifact }}
-                  fi
+                  cp dist/github-speedup* artifact/${{ matrix.artifact }}
                   ls -la artifact
 
             - uses: actions/upload-artifact@v4

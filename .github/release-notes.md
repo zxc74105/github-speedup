@@ -44,4 +44,4 @@
 | macOS Apple Silicon | `github-speedup-darwin-arm64` | M1/M2/M3/M4 芯片 Mac |
 
 > **说明**：32 位（x86）Windows 与 32 位 Linux 无法提供。原因：本项目基于 PySide6/Qt6，Qt6 已停止发布 32 位（win32 / i686）软件包，不存在对应 PyInstaller 构建环境。如确需 32 位，需要将 GUI 栈替换为 Tkinter 等仍支持 32 位的方案，另行发布。
-> 构建方式：GitHub Actions（`.github/workflows/release.yml`）在打 tag 时自动构建并上传到 Releases；macOS 为 universal2 构建后用 `lipo` 拆分出 Intel 与 ARM 两个版本。
+> 构建方式：GitHub Actions（`.github/workflows/release.yml`）在打 tag 时自动构建并上传到 Releases。每个平台在对应架构的官方托管 runner 上原生构建（Windows x64/ARM64、Linux x64/ARM64、macOS Intel/Apple Silicon 各自独立编译），确保二进制与目标架构完全匹配。
